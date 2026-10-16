@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
-import estateImageOne from "../assets/rubber-estate-1.jpg";
-import estateImageTwo from "../assets/rubber-estate-2.jpg";
-import estateImageThree from "../assets/rubber-estate-3.jpg";
+import estateImageOne from "../assets/rubber-estate-1.webp";
+import estateImageTwo from "../assets/rubber-estate-2.png";
+import estateImageThree from "../assets/rubber-estate-3.png";
+import estateImageFour from "../assets/rubber-estate-4.png";
 
-const estateImages = [estateImageOne, estateImageTwo, estateImageThree];
+const estateImages = [
+  estateImageOne,
+  estateImageTwo,
+  estateImageThree,
+  estateImageFour,
+];
 
 export default function EstateCarousel() {
   const [activeImage, setActiveImage] = useState(0);
