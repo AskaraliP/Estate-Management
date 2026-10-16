@@ -1,0 +1,314 @@
+.harvest-page {
+  padding: 24px;
+  color: #17201a;
+}
+
+.harvest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.harvest-header h2 {
+  margin: 0 0 7px;
+  font-size: 26px;
+}
+
+.harvest-header p {
+  margin: 0;
+  color: #6b756d;
+}
+
+.harvest-refresh {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #176b45;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.harvest-refresh:hover {
+  background: #105238;
+}
+
+.harvest-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.harvest-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.harvest-stat-card {
+  padding: 22px;
+  border: 1px solid #e3e8e3;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.harvest-stat-card span {
+  display: block;
+  margin-bottom: 10px;
+  color: #6b756d;
+  font-size: 13px;
+}
+
+.harvest-stat-card strong {
+  color: #176b45;
+  font-size: 26px;
+}
+
+.harvest-card {
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid #e3e8e3;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.harvest-card h3 {
+  margin: 0 0 22px;
+  font-size: 19px;
+}
+
+.harvest-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.harvest-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.harvest-field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.harvest-field input,
+.harvest-field select,
+.harvest-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #dce3dc;
+  border-radius: 8px;
+  background: #fff;
+  color: #17201a;
+  font: inherit;
+}
+
+.harvest-field input:focus,
+.harvest-field select:focus,
+.harvest-field textarea:focus {
+  outline: 2px solid #b4d8c1;
+  border-color: #176b45;
+}
+
+.harvest-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.harvest-submit {
+  margin-top: 20px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #176b45;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.harvest-submit:hover {
+  background: #105238;
+}
+
+.harvest-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.harvest-alert {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.harvest-alert.error {
+  background: #fff0ef;
+  color: #a12720;
+}
+
+.harvest-alert.success {
+  background: #eaf7ee;
+  color: #176b45;
+}
+
+.harvest-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.harvest-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.harvest-table th,
+.harvest-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8ece8;
+}
+
+.harvest-table th {
+  background: #f5f8f5;
+  color: #526257;
+  font-size: 13px;
+}
+
+.harvest-status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.harvest-status.pending {
+  background: #fff4d9;
+  color: #8a6200;
+}
+
+.harvest-status.verified {
+  background: #e0f4e6;
+  color: #176b45;
+}
+
+.harvest-status.rejected {
+  background: #ffe8e6;
+  color: #b42318;
+}
+
+.harvest-empty {
+  padding: 35px 15px;
+  color: #6b756d;
+  text-align: center;
+}
+
+.harvest-empty h3 {
+  margin-bottom: 8px;
+  color: #17201a;
+}
+
+@media (max-width: 800px) {
+  .harvest-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .harvest-page {
+    padding: 14px;
+  }
+
+  .harvest-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .harvest-header h2 {
+    font-size: 22px;
+  }
+
+  .harvest-card {
+    padding: 16px;
+  }
+
+  .harvest-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .harvest-field.full-width {
+    grid-column: auto;
+  }
+}
+/* =========================================
+   HARVEST VERIFICATION BUTTON
+========================================= */
+
+.harvest-verify-button {
+  margin: 8px 0 8px 10px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #176b45;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.harvest-verify-button:hover:not(:disabled) {
+  background: #105238;
+}
+
+.harvest-verify-button:focus-visible {
+  outline: 2px solid #176b45;
+  outline-offset: 3px;
+}
+
+.harvest-verify-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   VERIFICATION STATUS BADGES
+========================================= */
+
+.harvest-status {
+  vertical-align: middle;
+}
+
+.harvest-status.pending {
+  background: #fff4d9;
+  color: #8a6200;
+}
+
+.harvest-status.verified {
+  background: #e0f4e6;
+  color: #176b45;
+}
+
+.harvest-status.rejected {
+  background: #ffe8e6;
+  color: #b42318;
+}
+
+/* =========================================
+   RESPONSIVE VERIFICATION ACTION
+========================================= */
+
+@media (max-width: 600px) {
+  .harvest-verify-button {
+    display: block;
+    margin: 10px 0 4px;
+    padding: 9px 14px;
+  }
+}

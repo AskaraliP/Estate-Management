@@ -1,0 +1,368 @@
+
+/* =========================================
+   RUBBER ESTATE MANAGEMENT SYSTEM
+   Premium Minimal Sidebar
+========================================= */
+
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+
+  color: #dce9df;
+  background: #123d2b;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-sizing: border-box;
+  overflow: hidden;
+
+  transition: transform 0.25s ease;
+}
+
+/* =========================================
+   BRAND
+========================================= */
+
+.sidebar-brand {
+  min-height: 78px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px 18px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  box-sizing: border-box;
+}
+
+.sidebar-brand-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #123d2b;
+  background: #b8e3c5;
+  border-radius: 12px;
+}
+
+.sidebar-brand-text {
+  min-width: 0;
+}
+
+.sidebar-brand-text h2 {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.sidebar-brand-text span {
+  display: block;
+  margin-top: 3px;
+
+  color: #afc8b6;
+  font-size: 10px;
+}
+
+/* =========================================
+   MOBILE CLOSE BUTTON
+========================================= */
+
+.sidebar-mobile-close {
+  display: none;
+  margin-left: auto;
+  padding: 6px;
+
+  color: #dce9df;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+
+  cursor: pointer;
+}
+
+.sidebar-mobile-close:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* =========================================
+   USER PROFILE
+========================================= */
+
+.sidebar-profile {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin: 16px 12px 10px;
+  padding: 13px 11px;
+
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 11px;
+}
+
+.sidebar-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #d5f0dc;
+  background: rgba(184, 227, 197, 0.15);
+  border-radius: 10px;
+}
+
+.sidebar-profile-info {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sidebar-profile-info strong {
+  overflow: hidden;
+
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-profile-info span {
+  color: #b5cdbb;
+  font-size: 11px;
+}
+
+.sidebar-profile-settings {
+  flex-shrink: 0;
+  color: #9db8a5;
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.sidebar-navigation {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+
+  padding: 12px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #638575 #123d2b;
+}
+
+.sidebar-navigation::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-navigation::-webkit-scrollbar-track {
+  background: #123d2b;
+}
+
+.sidebar-navigation::-webkit-scrollbar-thumb {
+  background: #638575;
+  border-radius: 10px;
+}
+
+.sidebar-navigation::-webkit-scrollbar-thumb:hover {
+  background: #8aab98;
+}
+
+.sidebar-section-label {
+  margin: 8px 10px 12px;
+
+  color: #91b19b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.sidebar-link {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  min-height: 44px;
+  margin-bottom: 4px;
+  padding: 10px 12px;
+
+  color: #c4d8ca;
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  border-radius: 9px;
+  box-sizing: border-box;
+
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.sidebar-link svg {
+  flex-shrink: 0;
+}
+
+.sidebar-link span {
+  min-width: 0;
+}
+
+.sidebar-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-link-active {
+  color: #ffffff;
+  background: #246847;
+  font-weight: 600;
+}
+
+.sidebar-link-active::before {
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: 0;
+
+  width: 3px;
+  content: "";
+
+  background: #b8e3c5;
+  border-radius: 0 3px 3px 0;
+}
+
+.sidebar-link-active:hover {
+  background: #2a7350;
+}
+
+/* =========================================
+   BOTTOM SECTION
+========================================= */
+
+.sidebar-bottom {
+  flex-shrink: 0;
+  padding: 12px;
+
+  background: #123d2b;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.sidebar-bottom-note {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 10px;
+
+  color: #b5d8bf;
+  font-size: 11px;
+}
+
+.sidebar-bottom-note svg {
+  flex-shrink: 0;
+}
+
+.sidebar-logout {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px;
+
+  color: #f0d6d2;
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.sidebar-logout:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.sidebar-version {
+  padding: 10px 12px 2px;
+
+  color: #8fb09a;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* =========================================
+   TABLET AND MOBILE
+========================================= */
+
+@media (max-width: 900px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .app-sidebar.app-sidebar-open {
+    transform: translateX(0);
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.18);
+  }
+
+  .sidebar-mobile-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar,
+  .sidebar-link,
+  .sidebar-logout {
+    transition: none;
+  }
+}

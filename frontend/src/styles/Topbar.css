@@ -1,0 +1,183 @@
+.topbar {
+  height: 76px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5ebe6;
+  box-sizing: border-box;
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-left {
+  gap: 16px;
+  min-width: 0;
+}
+
+.topbar-right {
+  gap: 18px;
+}
+
+.topbar-heading h1 {
+  margin: 0;
+  color: #17201a;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.topbar-heading p {
+  margin: 4px 0 0;
+  color: #78837b;
+  font-size: 12px;
+}
+
+.topbar-menu-btn,
+.topbar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: #34483a;
+  cursor: pointer;
+  border-radius: 9px;
+}
+
+.topbar-menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+}
+
+.topbar-icon-btn {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.topbar-menu-btn:hover,
+.topbar-icon-btn:hover {
+  background: #eef5ef;
+  color: #176b45;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 36px;
+  background: #e5ebe6;
+}
+
+.topbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  color: #176b45;
+  background: #e8f5ed;
+  border-radius: 50%;
+}
+
+.topbar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.topbar-user-name {
+  max-width: 160px;
+  overflow: hidden;
+  color: #17201a;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-user-role {
+  color: #78837b;
+  font-size: 11px;
+}
+
+.topbar-chevron {
+  color: #78837b;
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    height: 68px;
+    padding: 0 16px;
+    gap: 10px;
+  }
+
+  .topbar-menu-btn {
+    display: flex;
+  }
+
+  .topbar-left {
+    gap: 10px;
+  }
+
+  .topbar-heading h1 {
+    font-size: 17px;
+  }
+
+  .topbar-heading p {
+    display: none;
+  }
+
+  .topbar-right {
+    gap: 10px;
+  }
+
+  .topbar-divider,
+  .topbar-chevron {
+    display: none;
+  }
+
+  .topbar-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .topbar-user-name {
+    max-width: 90px;
+    font-size: 12px;
+  }
+
+  .topbar-user-role {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar {
+    padding: 0 10px;
+  }
+
+  .topbar-right {
+    gap: 4px;
+  }
+
+  .topbar-user-info {
+    display: none;
+  }
+}

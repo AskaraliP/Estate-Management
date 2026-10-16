@@ -1,0 +1,404 @@
+
+.buyer-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #17201a;
+}
+
+.buyer-page-header,
+.buyer-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.buyer-page-header h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+}
+
+.buyer-page p {
+  margin: 0;
+  color: #6b756d;
+  line-height: 1.5;
+}
+
+.buyer-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #176b45;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.buyer-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buyer-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: fit-content;
+  min-width: 230px;
+  padding: 20px 24px;
+  border: 1px solid #e3e8e3;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.buyer-summary-icon,
+.buyer-company-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #eaf4ee;
+  color: #176b45;
+  border-radius: 10px;
+}
+
+.buyer-summary-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.buyer-summary-card span {
+  color: #6b756d;
+  font-size: 13px;
+}
+
+.buyer-summary-card h2 {
+  margin: 5px 0 0;
+  font-size: 26px;
+}
+
+.buyer-list-section {
+  padding: 24px;
+  border: 1px solid #e3e8e3;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.buyer-list-header {
+  margin-bottom: 22px;
+}
+
+.buyer-list-header h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+}
+
+.buyer-search-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: min(100%, 340px);
+  padding: 0 12px;
+  border: 1px solid #dce4dc;
+  border-radius: 8px;
+  color: #6b756d;
+}
+
+.buyer-search-box input {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #17201a;
+  font: inherit;
+}
+
+.buyer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.buyer-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e3e8e3;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.buyer-card:hover {
+  border-color: #b6dbc5;
+  box-shadow: 0 5px 18px rgba(20, 50, 30, 0.06);
+}
+
+.buyer-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.buyer-company-icon {
+  width: 46px;
+  height: 46px;
+}
+
+.buyer-company-info {
+  min-width: 0;
+}
+
+.buyer-company-info h3 {
+  overflow-wrap: anywhere;
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.buyer-company-info span {
+  color: #6b756d;
+  font-size: 12px;
+}
+
+.buyer-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  color: #176b45;
+}
+
+.buyer-detail span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #4d5b51;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.buyer-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 16px;
+  color: #6b756d;
+  text-align: center;
+}
+
+.buyer-empty-state h3 {
+  margin: 0;
+  color: #17201a;
+}
+
+.buyer-empty-state p {
+  margin: 0;
+}
+
+.buyer-error-message {
+  padding: 13px 16px;
+  border-radius: 8px;
+  background: #fdeaea;
+  color: #b42318;
+}
+
+@media (max-width: 700px) {
+  .buyer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .buyer-list-section {
+    padding: 16px;
+  }
+
+  .buyer-page-header h1 {
+    font-size: 22px;
+  }
+
+  .buyer-search-box {
+    width: 100%;
+  }
+}
+
+/* Header actions */
+.buyer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Add Buyer button */
+.buyer-add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: 1px solid #176b45;
+  border-radius: 8px;
+  background: #176b45;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.buyer-add-button:hover {
+  background: #125638;
+}
+
+.buyer-add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Add Buyer form container */
+.buyer-form-section {
+  padding: 24px;
+  border: 1px solid #e3e8e3;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.buyer-form-heading {
+  margin-bottom: 22px;
+}
+
+.buyer-form-heading h2 {
+  margin: 0 0 6px;
+  color: #17201a;
+  font-size: 19px;
+}
+
+.buyer-form-heading p {
+  color: #6b756d;
+  font-size: 14px;
+}
+
+/* Form fields */
+.buyer-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.buyer-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #344238;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.buyer-form-grid input,
+.buyer-form-grid textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid #dce4dc;
+  border-radius: 8px;
+  outline: none;
+  background: #fff;
+  color: #17201a;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.buyer-form-grid input:focus,
+.buyer-form-grid textarea:focus {
+  border-color: #176b45;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.1);
+}
+
+.buyer-form-grid textarea {
+  resize: vertical;
+}
+
+.buyer-form-full-width {
+  grid-column: 1 / -1;
+}
+
+/* Form action buttons */
+.buyer-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.buyer-cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 16px;
+  border: 1px solid #dce4dc;
+  border-radius: 8px;
+  background: #fff;
+  color: #344238;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.buyer-cancel-button:hover {
+  background: #f5f8f5;
+}
+
+.buyer-cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Success message */
+.buyer-success-message {
+  padding: 13px 16px;
+  border: 1px solid #b9dfc7;
+  border-radius: 8px;
+  background: #effaf2;
+  color: #176b45;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Mobile layout */
+@media (max-width: 700px) {
+  .buyer-form-section {
+    padding: 16px;
+  }
+
+  .buyer-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .buyer-form-full-width {
+    grid-column: auto;
+  }
+
+  .buyer-header-actions {
+    width: 100%;
+  }
+
+  .buyer-header-actions button {
+    flex: 1;
+  }
+
+  .buyer-form-actions button {
+    flex: 1;
+  }
+}

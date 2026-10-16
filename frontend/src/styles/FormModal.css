@@ -1,0 +1,232 @@
+
+.form-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(16, 30, 21, 0.55);
+  backdrop-filter: blur(3px);
+  overflow-y: auto;
+}
+
+.form-modal {
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e3e8e3;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(20, 40, 26, 0.2);
+  overflow: hidden;
+  animation: formModalAppear 0.2s ease-out;
+}
+
+.form-modal-small {
+  max-width: 420px;
+}
+
+.form-modal-medium {
+  max-width: 600px;
+}
+
+.form-modal-large {
+  max-width: 800px;
+}
+
+.form-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 24px;
+  border-bottom: 1px solid #e3e8e3;
+}
+
+.form-modal-header h2 {
+  margin: 0;
+  color: #17201a;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.form-modal-subtitle {
+  margin: 7px 0 0;
+  color: #6b756d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.form-modal-close {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b756d;
+  background: #f5f7f4;
+  border: 1px solid #e3e8e3;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.form-modal-close:hover:not(:disabled) {
+  color: #17201a;
+  background: #eaf4ee;
+}
+
+.form-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.form-modal-body .form-group {
+  margin-bottom: 18px;
+}
+
+.form-modal-body label {
+  display: block;
+  margin-bottom: 7px;
+  color: #354239;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-modal-body input,
+.form-modal-body select,
+.form-modal-body textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: #17201a;
+  font-family: inherit;
+  font-size: 13px;
+  background: #ffffff;
+  border: 1px solid #dce3dc;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-modal-body textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-modal-body input:focus,
+.form-modal-body select:focus,
+.form-modal-body textarea:focus {
+  border-color: #176b45;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.09);
+}
+
+.form-modal-body input::placeholder,
+.form-modal-body textarea::placeholder {
+  color: #9aa39b;
+}
+
+.form-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  background: #fbfcfb;
+  border-top: 1px solid #e3e8e3;
+}
+
+.form-modal-footer button {
+  min-height: 40px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.form-modal-cancel {
+  color: #354239;
+  background: #ffffff;
+  border: 1px solid #dce3dc;
+}
+
+.form-modal-cancel:hover:not(:disabled) {
+  background: #f0f3f0;
+}
+
+.form-modal-submit {
+  color: #ffffff;
+  background: #176b45;
+  border: 1px solid #176b45;
+}
+
+.form-modal-submit:hover:not(:disabled) {
+  background: #105238;
+}
+
+.form-modal-footer button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes formModalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .form-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .form-modal {
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .form-modal-header {
+    padding: 18px;
+  }
+
+  .form-modal-header h2 {
+    font-size: 17px;
+  }
+
+  .form-modal-body {
+    padding: 18px;
+  }
+
+  .form-modal-footer {
+    padding: 15px 18px;
+  }
+
+  .form-modal-footer button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-modal {
+    animation: none;
+  }
+}

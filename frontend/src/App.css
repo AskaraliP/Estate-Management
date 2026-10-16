@@ -1,0 +1,103 @@
+
+/* =========================================
+   APP ROOT
+========================================= */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
+/* =========================================
+   GLOBAL APP CONTAINERS
+========================================= */
+
+.app {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* =========================================
+   RESPONSIVE IMAGES AND MEDIA
+========================================= */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   PREVENT FLEX AND GRID OVERFLOW
+========================================= */
+
+.auth-layout,
+.auth-main-content,
+.login-single-page,
+.login-split-container,
+.login-column-card {
+  min-width: 0;
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

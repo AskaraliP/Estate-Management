@@ -1,0 +1,86 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.status-badge-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Pending */
+.status-pending {
+  color: #946200;
+  background: #fff7df;
+  border-color: #f3e3a8;
+}
+
+/* Approved */
+.status-approved,
+.status-verified,
+.status-paid,
+.status-present,
+.status-active,
+.status-completed {
+  color: #176b45;
+  background: #e8f5ed;
+  border-color: #c6e7d2;
+}
+
+/* Rejected */
+.status-rejected,
+.status-absent,
+.status-cancelled {
+  color: #b42318;
+  background: #fff0ee;
+  border-color: #f5cfca;
+}
+
+/* Unpaid */
+.status-unpaid {
+  color: #b54708;
+  background: #fff3e8;
+  border-color: #f5d5b8;
+}
+
+/* Partially paid */
+.status-partial,
+.status-half-day,
+.status-processing {
+  color: #175cd3;
+  background: #eff6ff;
+  border-color: #c9ddff;
+}
+
+/* Inactive */
+.status-inactive {
+  color: #667085;
+  background: #f2f4f7;
+  border-color: #e4e7ec;
+}
+
+/* Unknown or custom status */
+.status-default {
+  color: #475467;
+  background: #f2f4f7;
+  border-color: #e4e7ec;
+}
+
+@media (max-width: 480px) {
+  .status-badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
