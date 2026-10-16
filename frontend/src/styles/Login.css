@@ -1114,13 +1114,30 @@
   z-index: 1;
   width: min(100%, 548px);
   min-height: 0;
-  gap: 24px;
-  padding: 38px;
+  gap: 18px;
+  padding: 32px;
   border-radius: 20px;
   background: rgba(250, 253, 250, 0.96);
   box-shadow: 0 18px 55px rgba(5, 35, 20, 0.2);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+.signup-signin-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid #e5eee7;
+  color: #718477;
+  font-size: 13px;
+}
+
+.signup-options-card .login-copyright {
+  margin-top: 0;
 }
 
 @media (max-width: 700px) {
@@ -1174,8 +1191,8 @@
   }
 
   .signup-options-card {
-    gap: 28px;
-    padding: 38px 24px;
+    gap: 18px;
+    padding: 30px 24px;
   }
 
   .signup-options-card .login-heading-icon {

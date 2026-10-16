@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import estateImageOne from "../assets/rubber-estate-1.webp";
-import estateImageTwo from "../assets/rubber-estate-2.png";
-import estateImageThree from "../assets/rubber-estate-3.png";
-import estateImageFour from "../assets/rubber-estate-4.png";
+import estateImageOne from "../assets/rubber-estate-1-4k.webp";
+import estateImageTwo from "../assets/rubber-estate-2-4k.webp";
+import estateImageThree from "../assets/rubber-estate-3-4k.webp";
+import estateImageFour from "../assets/rubber-estate-4-4k.webp";
 
 const estateImages = [
   estateImageOne,

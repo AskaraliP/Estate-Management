@@ -80,6 +80,13 @@ export default function SignupOptions() {
           </Link>
         </div>
 
+        <p className="signup-signin-prompt">
+          <span>Already have an account?</span>
+          <Link to="/login" className="login-signup-link">
+            Sign in <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </p>
+
         <p className="login-copyright">
           © {new Date().getFullYear()} Rubber Estate Management System
         </p>
