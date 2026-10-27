@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: estate-management-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py migrate --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: false
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://estate-management-six.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: estate-management-db
+          property: connectionString
+
+databases:
+  - name: estate-management-db
+    databaseName: rubber_estate_management
+    user: estate_management
+    plan: free
