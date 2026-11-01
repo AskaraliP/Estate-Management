@@ -167,10 +167,15 @@ export default function Payments() {
         0
       );
 
+  const getInvoicePaidAmount = (invoice) =>
+    invoice.paid_amount != null
+      ? Number(invoice.paid_amount)
+      : getPaidAmount(invoice.id);
+
   const getBalance = (invoice) =>
     Math.max(
       0,
-      getInvoiceAmount(invoice) - getPaidAmount(invoice.id)
+      getInvoiceAmount(invoice) - getInvoicePaidAmount(invoice)
     );
 
   const canPayInvoice = (invoice) => {
@@ -179,12 +184,12 @@ export default function Payments() {
     ).toUpperCase();
 
     return (
-      !["PAID", "COMPLETED", "CANCELLED", "CANCELED"].includes(status) &&
+      ["UNPAID", "PARTIAL"].includes(status) &&
       getBalance(invoice) > 0
     );
   };
 
-  const handlePayNow = async (invoice) => {
+  const handlePayNow = async (invoice, paymentType = "FULL") => {
     if (payingInvoiceId !== null) return;
 
     setError("");
@@ -202,6 +207,7 @@ export default function Payments() {
       // Create an order on your authenticated Django backend.
       const response = await API.post("razorpay/create-order/", {
         invoice: invoice.id,
+        payment_type: paymentType,
       });
 
       const orderData = response.data || {};
@@ -524,7 +530,7 @@ export default function Payments() {
                         {currency(getInvoiceAmount(invoice))}
                       </td>
 
-                      <td>{currency(getPaidAmount(invoice.id))}</td>
+                      <td>{currency(getInvoicePaidAmount(invoice))}</td>
 
                       <td className="payments-amount">
                         {currency(balance)}
@@ -539,7 +545,40 @@ export default function Payments() {
                       </td>
 
                       <td>
-                        {canPay ? (
+                        {canPay &&
+                        invoiceStatus === "UNPAID" &&
+                        getInvoicePaidAmount(invoice) <= 0 ? (
+                          <div className="payments-payment-options">
+                            <button
+                              type="button"
+                              className="payments-pay-btn"
+                              disabled={
+                                payingInvoiceId !== null || loading
+                              }
+                              onClick={() =>
+                                handlePayNow(invoice, "HALF")
+                              }
+                            >
+                              {payingInvoiceId === invoice.id
+                                ? "Opening..."
+                                : "Pay Half"}
+                            </button>
+                            <button
+                              type="button"
+                              className="payments-pay-btn"
+                              disabled={
+                                payingInvoiceId !== null || loading
+                              }
+                              onClick={() =>
+                                handlePayNow(invoice, "FULL")
+                              }
+                            >
+                              {payingInvoiceId === invoice.id
+                                ? "Opening..."
+                                : "Pay Full"}
+                            </button>
+                          </div>
+                        ) : canPay ? (
                           <button
                             type="button"
                             className="payments-pay-btn"
@@ -547,11 +586,11 @@ export default function Payments() {
                               payingInvoiceId !== null ||
                               loading
                             }
-                            onClick={() => handlePayNow(invoice)}
+                            onClick={() => handlePayNow(invoice, "FULL")}
                           >
                             {payingInvoiceId === invoice.id
                               ? "Opening..."
-                              : "₹ Pay Now"}
+                              : "Pay Remaining"}
                           </button>
                         ) : (
                           <span className="payments-paid-label">

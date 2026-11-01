@@ -379,6 +379,12 @@
   white-space: nowrap;
 }
 
+.payments-payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .payments-pay-btn:hover:not(:disabled) {
   background: #115e59;
   transform: translateY(-1px);

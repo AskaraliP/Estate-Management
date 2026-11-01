@@ -1,4 +1,5 @@
 
+from django.db.models import Sum
 from rest_framework import serializers
 
 from .models import (
@@ -15,6 +16,7 @@ from .models import (
     PurchaseOrder,
     Invoice,
     Payment,
+    Notification,
     LabourWagePayment,
 )
 
@@ -427,6 +429,8 @@ class BuyerProfileSerializer(serializers.ModelSerializer):
 
 class LabourEstateRequestSerializer(serializers.ModelSerializer):
     labour_name = serializers.ReadOnlyField(source="labour.username")
+    labour_full_name = serializers.SerializerMethodField()
+    labour_phone = serializers.SerializerMethodField()
     estate_name = serializers.ReadOnlyField(source="estate.name")
 
     class Meta:
@@ -435,6 +439,8 @@ class LabourEstateRequestSerializer(serializers.ModelSerializer):
             "id",
             "labour",
             "labour_name",
+            "labour_full_name",
+            "labour_phone",
             "estate",
             "estate_name",
             "status",
@@ -451,6 +457,14 @@ class LabourEstateRequestSerializer(serializers.ModelSerializer):
             "requested_at",
             "responded_at",
         ]
+
+    def get_labour_full_name(self, obj):
+        profile = getattr(obj.labour, "labourprofile", None)
+        return profile.full_name if profile else obj.labour.username
+
+    def get_labour_phone(self, obj):
+        profile = getattr(obj.labour, "labourprofile", None)
+        return profile.phone if profile else ""
 
 
 # =========================================================
@@ -568,6 +582,14 @@ class InvoiceSerializer(serializers.ModelSerializer):
         source="order.buyer.username"
     )
     order_number = serializers.ReadOnlyField(source="order.id")
+    paid_amount = serializers.SerializerMethodField()
+
+    def get_paid_amount(self, invoice):
+        return (
+            invoice.payments.filter(status="SUCCESS")
+            .aggregate(total=Sum("amount"))["total"]
+            or 0
+        )
 
     class Meta:
         model = Invoice
@@ -578,6 +600,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
             "buyer_name",
             "invoice_number",
             "amount",
+            "paid_amount",
             "payment_status",
             "payment_method",
             "transaction_reference",
@@ -632,6 +655,21 @@ class PaymentSerializer(serializers.ModelSerializer):
             "status",
             "payment_date",
         ]
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = [
+            "id",
+            "notification_type",
+            "title",
+            "message",
+            "target_url",
+            "is_read",
+            "created_at",
+        ]
+        read_only_fields = fields
 
 
 # =========================================================
@@ -1562,10 +1600,6 @@ class LabourWagePaymentSerializer(serializers.ModelSerializer):
 #             "status",
 #             "payment_date",
 #         ]
-
-
-
-
 
 
 

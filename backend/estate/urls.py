@@ -17,6 +17,7 @@ from .views import (
     PurchaseOrderViewSet,
     InvoiceViewSet,
     PaymentViewSet,
+    NotificationViewSet,
     LabourWagePaymentViewSet,
 
     # Other API views
@@ -119,6 +120,12 @@ router.register(
     r'payments',
     PaymentViewSet,
     basename='payment',
+)
+
+router.register(
+    r'notifications',
+    NotificationViewSet,
+    basename='notification',
 )
 
 router.register(

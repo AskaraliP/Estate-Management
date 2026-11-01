@@ -43,6 +43,7 @@ const getPaymentStatus = (invoice) => {
   ).toUpperCase();
 
   if (status === "REFUNDED") return "REFUNDED";
+  if (status === "PARTIAL") return "PARTIAL";
 
   const total = getInvoiceTotal(invoice);
   const paid = getPaidAmount(invoice);
@@ -226,7 +227,7 @@ export default function Invoices() {
   // PAY INVOICE WITH RAZORPAY
   // ----------------------------------------------------
 
-  const handlePayInvoice = async (invoice) => {
+  const handlePayInvoice = async (invoice, paymentType = "FULL") => {
     if (payingInvoiceId !== null) return;
 
     const invoiceId = invoice.id;
@@ -262,16 +263,6 @@ export default function Invoices() {
       return;
     }
 
-    const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
-
-    if (!keyId) {
-      showPaymentMessage(
-        "Razorpay key is missing. Add VITE_RAZORPAY_KEY_ID to your frontend .env file.",
-        "error"
-      );
-      return;
-    }
-
     setPayingInvoiceId(invoiceId);
     setPaymentMessage("");
 
@@ -283,7 +274,7 @@ export default function Invoices() {
         "razorpay/create-order/",
         {
           invoice: invoiceId,
-          amount: balance,
+          payment_type: paymentType,
         }
       );
 
@@ -303,10 +294,20 @@ export default function Invoices() {
       }
 
       const orderAmount = Number(order.amount);
+      const razorpayKey =
+        order.key_id ??
+        order.key ??
+        import.meta.env.VITE_RAZORPAY_KEY_ID;
 
       if (!Number.isFinite(orderAmount) || orderAmount <= 0) {
         throw new Error(
           "The server returned an invalid order amount."
+        );
+      }
+
+      if (!razorpayKey) {
+        throw new Error(
+          "Razorpay Key ID is missing. Configure it on the backend or in VITE_RAZORPAY_KEY_ID."
         );
       }
 
@@ -322,7 +323,7 @@ export default function Invoices() {
         };
 
         const checkout = new window.Razorpay({
-          key: order.key_id ?? order.key ?? keyId,
+          key: razorpayKey,
           amount: orderAmount,
           currency: order.currency ?? "INR",
 
@@ -551,7 +552,7 @@ export default function Invoices() {
           <h1>Invoices &amp; Payments</h1>
 
           <p className="invoices-subtitle">
-            Track B2B sales invoices, payments, and outstanding balances.
+            Pay each invoice in full with Razorpay and track payment status.
           </p>
         </div>
 
@@ -719,8 +720,7 @@ export default function Invoices() {
                     payingInvoiceId === invoice.id;
 
                   const canPay =
-                    (status === "UNPAID" ||
-                      status === "PARTIAL") &&
+                    ["UNPAID", "PARTIAL"].includes(status) &&
                     balance > 0;
 
                   return (
@@ -769,20 +769,39 @@ export default function Invoices() {
                       </td>
 
                       <td className="invoices-actions-cell">
-                        {canPay ? (
+                        {canPay && status === "UNPAID" ? (
+                          <div className="invoices-payment-options">
+                            <button
+                              type="button"
+                              className="invoices-pay-btn"
+                              onClick={() =>
+                                handlePayInvoice(invoice, "HALF")
+                              }
+                              disabled={payingInvoiceId !== null}
+                            >
+                              {isPaying ? "Processing..." : "Pay Half"}
+                            </button>
+                            <button
+                              type="button"
+                              className="invoices-pay-btn"
+                              onClick={() =>
+                                handlePayInvoice(invoice, "FULL")
+                              }
+                              disabled={payingInvoiceId !== null}
+                            >
+                              {isPaying ? "Processing..." : "Pay Full"}
+                            </button>
+                          </div>
+                        ) : canPay ? (
                           <button
                             type="button"
                             className="invoices-pay-btn"
-                            onClick={() =>
-                              handlePayInvoice(invoice)
-                            }
+                            onClick={() => handlePayInvoice(invoice, "FULL")}
                             disabled={payingInvoiceId !== null}
                           >
                             {isPaying
                               ? "Processing..."
-                              : status === "PARTIAL"
-                                ? "Pay Remaining"
-                                : "Pay Now"}
+                              : "Pay Remaining"}
                           </button>
                         ) : (
                           <span className="invoices-no-action">

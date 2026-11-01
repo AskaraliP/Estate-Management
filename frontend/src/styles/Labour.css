@@ -48,6 +48,126 @@
   opacity: 0.6;
 }
 
+.labour-requests-panel {
+  margin-bottom: 24px;
+  padding: 22px;
+  border: 1px solid #e5ebe5;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgb(20 50 30 / 3%);
+}
+
+.labour-requests-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.labour-requests-heading h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.labour-requests-heading p {
+  margin: 6px 0 0;
+  color: #758078;
+  font-size: 13px;
+}
+
+.labour-pending-count {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #fff2df;
+  color: #a85b0b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.labour-requests-list {
+  display: grid;
+  gap: 12px;
+}
+
+.labour-request-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px;
+  border: 1px solid #e5ebe5;
+  border-radius: 10px;
+}
+
+.labour-request-info {
+  display: grid;
+  gap: 5px;
+  color: #758078;
+  font-size: 12px;
+}
+
+.labour-request-info strong {
+  color: #243128;
+  font-size: 14px;
+}
+
+.labour-request-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.labour-request-approve,
+.labour-request-reject {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.labour-request-approve {
+  border-color: #176b45;
+  background: #176b45;
+}
+
+.labour-request-approve:hover:not(:disabled) {
+  background: #125637;
+}
+
+.labour-request-reject {
+  border-color: #dc2626;
+  background: #dc2626;
+}
+
+.labour-request-reject:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.labour-request-approve:disabled,
+.labour-request-reject:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.labour-requests-empty {
+  padding: 24px 16px;
+  border: 1px dashed #dce5dd;
+  border-radius: 9px;
+  color: #758078;
+  font-size: 13px;
+  text-align: center;
+}
+
 .labour-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -341,6 +461,15 @@
     flex-direction: column;
   }
 
+  .labour-request-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .labour-request-actions > button {
+    flex: 1;
+  }
+
   .labour-search {
     width: auto;
   }
@@ -537,5 +666,10 @@
 
   .labour-header-actions {
     width: 100%;
+  }
+
+  .labour-requests-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

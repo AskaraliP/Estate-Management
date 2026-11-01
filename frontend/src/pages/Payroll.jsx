@@ -1,6 +1,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import API from "../api/client";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Payroll.css";
 
 const getArray = (data) => {
@@ -157,6 +158,12 @@ const getApiErrorMessage = (error) => {
 };
 
 const Payroll = () => {
+  const { user } = useAuth();
+  const role = String(user?.role ?? localStorage.getItem("user_role") ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  const canRecordPayments = role === "admin" || role === "estate_owner";
   const [labourers, setLabourers] = useState([]);
   const [attendance, setAttendance] = useState([]);
   const [wagePayments, setWagePayments] = useState([]);
@@ -440,12 +447,16 @@ const Payroll = () => {
   };
 
   const openPaymentModal = (worker) => {
+    const remaining = Math.max(
+      worker.calculatedWage - paidForWorker(worker),
+      0
+    );
     setPaymentWorker(worker);
     setPaymentError("");
     setPaymentSuccess("");
 
     setPaymentForm({
-      amount: worker.calculatedWage.toFixed(2),
+      amount: remaining.toFixed(2),
       payment_date: today,
       payment_method: "CASH",
       transaction_reference: "",
@@ -479,9 +490,15 @@ const Payroll = () => {
       return;
     }
 
-    if (amount > paymentWorker.calculatedWage) {
+    const remainingWages = Math.max(
+      paymentWorker.calculatedWage -
+        paidForWorker(paymentWorker),
+      0
+    );
+
+    if (amount > remainingWages) {
       setPaymentError(
-        "The payment cannot exceed the estimated wages for this selected period."
+        "The payment cannot exceed the remaining wages for this selected period."
       );
       return;
     }
@@ -534,12 +551,18 @@ const Payroll = () => {
   const paidForWorker = (worker) =>
     wagePayments
       .filter(
-        (payment) =>
-          String(payment.labour) === String(worker.userId) &&
-          String(payment.estate) === String(worker.estateId) &&
-          payment.status === "PAID" &&
-          payment.period_start === startDate &&
-          payment.period_end === endDate
+        (payment) => {
+          const periodStart = String(payment.period_start ?? "").slice(0, 10);
+          const periodEnd = String(payment.period_end ?? "").slice(0, 10);
+
+          return (
+            String(payment.labour) === String(worker.userId) &&
+            String(payment.estate) === String(worker.estateId) &&
+            String(payment.status ?? "").toUpperCase() === "PAID" &&
+            periodStart >= startDate &&
+            periodEnd <= endDate
+          );
+        }
       )
       .reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
 
@@ -748,7 +771,7 @@ const Payroll = () => {
                 <th>Paid</th>
                 <th>Balance</th>
                 <th>Status</th>
-                <th>Action</th>
+                {canRecordPayments && <th>Action</th>}
               </tr>
             </thead>
 
@@ -819,27 +842,29 @@ const Payroll = () => {
                             : row.status}
                         </span>
                       </td>
-                      <td>
-                        <button
-                          type="button"
-                          className="payroll-payment-btn"
-                          onClick={() => openPaymentModal(row)}
-                          disabled={
-                            balance <= 0 ||
-                            !row.userId ||
-                            !row.estateId
-                          }
-                        >
-                          {paid > 0 ? "Pay balance" : "Record payment"}
-                        </button>
-                      </td>
+                      {canRecordPayments && (
+                        <td>
+                          <button
+                            type="button"
+                            className="payroll-payment-btn"
+                            onClick={() => openPaymentModal(row)}
+                            disabled={
+                              balance <= 0 ||
+                              !row.userId ||
+                              !row.estateId
+                            }
+                          >
+                            {paid > 0 ? "Pay balance" : "Record payment"}
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
 
               {!loading && filteredRows.length === 0 && (
                 <tr>
-                  <td colSpan="12">
+                  <td colSpan={canRecordPayments ? 12 : 11}>
                     <div className="payroll-empty">
                       <div className="payroll-empty-icon">♧</div>
                       <h3>No labourers found</h3>
@@ -861,7 +886,7 @@ const Payroll = () => {
 
               {loading && (
                 <tr>
-                  <td colSpan="12">
+                  <td colSpan={canRecordPayments ? 12 : 11}>
                     <div className="payroll-loading">
                       <span className="payroll-loader" />
                       Loading payroll data...
@@ -885,7 +910,9 @@ const Payroll = () => {
                   </td>
                   <td>—</td>
                   <td>—</td>
-                  <td colSpan="2">Estimate only</td>
+                  <td colSpan={canRecordPayments ? 2 : 1}>
+                    Estimate only
+                  </td>
                 </tr>
               </tfoot>
             )}

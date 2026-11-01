@@ -164,7 +164,7 @@ function isAlreadyAssignedToUser(estate, user) {
 }
 
 export default function Estates() {
-  const { user } = useAuth();
+  const { user, loadUser } = useAuth();
 
   const role = getRole(user);
   const isAdmin = role === "admin";
@@ -181,7 +181,7 @@ export default function Estates() {
   const [saving, setSaving] = useState(false);
   const [deletingEstateId, setDeletingEstateId] = useState(null);
   const [requestingEstateId, setRequestingEstateId] = useState(null);
-  const [requestedEstateIds, setRequestedEstateIds] = useState([]);
+  const [myRequests, setMyRequests] = useState([]);
   const [assignmentConfirmed, setAssignmentConfirmed] = useState(
     getAssignedEstateId(user) !== null
   );
@@ -197,10 +197,58 @@ export default function Estates() {
     setError("");
 
     try {
-      const response = await API.get("estates/");
-      const data = response.data?.results ?? response.data ?? [];
+      const results = await Promise.allSettled([
+        API.get("estates/"),
+        isLabour
+          ? API.get("labour-estate-requests/")
+          : Promise.resolve(null),
+        isLabour ? loadUser() : Promise.resolve(null),
+      ]);
 
-      setEstates(Array.isArray(data) ? data : []);
+      if (results[0].status === "rejected") {
+        throw results[0].reason;
+      }
+
+      const estateData =
+        results[0].value.data?.results ?? results[0].value.data ?? [];
+      setEstates(Array.isArray(estateData) ? estateData : []);
+
+      if (isLabour) {
+        const requestResult = results[1];
+        if (requestResult.status === "fulfilled") {
+          const requestData =
+            requestResult.value.data?.results ??
+            requestResult.value.data ??
+            [];
+          setMyRequests(
+            Array.isArray(requestData) ? requestData : []
+          );
+        } else {
+          setError(
+            getErrorMessage(
+              requestResult.reason,
+              "Unable to load labour requests."
+            )
+          );
+        }
+      } else {
+        setMyRequests([]);
+      }
+
+      if (isLabour) {
+        if (results[2].status === "fulfilled") {
+          setAssignmentConfirmed(
+            getAssignedEstateId(results[2].value) !== null
+          );
+        } else {
+          setError(
+            getErrorMessage(
+              results[2].reason,
+              "Unable to refresh your estate assignment."
+            )
+          );
+        }
+      }
     } catch (err) {
       setError(
         getErrorMessage(
@@ -211,17 +259,11 @@ export default function Estates() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isLabour, loadUser]);
 
   useEffect(() => {
     loadEstates();
   }, [loadEstates]);
-
-  useEffect(() => {
-    if (getAssignedEstateId(user) !== null) {
-      setAssignmentConfirmed(true);
-    }
-  }, [user]);
 
   const filteredEstates = estates.filter((estate) => {
     const text = [
@@ -382,8 +424,18 @@ export default function Estates() {
     setError("");
     setMessage("");
 
-    if (requestedEstateIds.includes(estate.id)) {
-      setMessage("You have already submitted a request for this estate.");
+    const existingRequest = myRequests.find(
+      (request) => String(request.estate) === String(estate.id)
+    );
+
+    if (existingRequest?.status === "PENDING") {
+      setMessage("Your request is waiting for the estate owner's approval.");
+      return;
+    }
+
+    if (existingRequest?.status === "APPROVED") {
+      setAssignmentConfirmed(true);
+      setMessage("Your request was approved. Refresh to open your assigned estate.");
       return;
     }
 
@@ -397,13 +449,15 @@ export default function Estates() {
 
     try {
       // Keep this URL aligned with the existing Django router.
-      await API.post("labour-estate-requests/", {
+      const response = await API.post("labour-estate-requests/", {
         estate: estate.id,
       });
 
-      setRequestedEstateIds((current) => [
-        ...current,
-        estate.id,
+      setMyRequests((current) => [
+        response.data,
+        ...current.filter(
+          (request) => String(request.estate) !== String(estate.id)
+        ),
       ]);
 
       setMessage(
@@ -642,25 +696,41 @@ export default function Estates() {
                           Already Assigned
                         </span>
                       ) : (
-                        <button
-                          type="button"
-                          className="estate-button estate-button-primary"
-                          onClick={() => handleRequestToJoin(estate)}
-                          disabled={
-                            isFull ||
-                            requestingEstateId === estate.id ||
-                            requestedEstateIds.includes(estate.id)
+                        (() => {
+                          const request = myRequests.find(
+                            (item) =>
+                              String(item.estate) === String(estate.id)
+                          );
+
+                          if (request?.status === "PENDING") {
+                            return (
+                              <span className="estate-assignment-status">
+                                Request Pending
+                              </span>
+                            );
                           }
-                        >
-                          <Send size={15} />
-                          {isFull
-                            ? "Estate Full"
-                            : requestingEstateId === estate.id
-                              ? "Submitting..."
-                              : requestedEstateIds.includes(estate.id)
-                                ? "Request Submitted"
-                                : "Request to Join"}
-                        </button>
+
+                          return (
+                            <button
+                              type="button"
+                              className="estate-button estate-button-primary"
+                              onClick={() => handleRequestToJoin(estate)}
+                              disabled={
+                                isFull ||
+                                requestingEstateId === estate.id
+                              }
+                            >
+                              <Send size={15} />
+                              {isFull
+                                ? "Estate Full"
+                                : requestingEstateId === estate.id
+                                  ? "Submitting..."
+                                  : request?.status === "REJECTED"
+                                    ? "Request Again"
+                                    : "Request to Join"}
+                            </button>
+                          );
+                        })()
                       )}
                     </div>
                   )}

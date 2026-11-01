@@ -35,6 +35,7 @@ from .models import (
     PurchaseOrder,
     Invoice,
     Payment,
+    Notification,
     LabourWagePayment,
 )
 
@@ -52,6 +53,7 @@ from .serializers import (
     PurchaseOrderSerializer,
     InvoiceSerializer,
     PaymentSerializer,
+    NotificationSerializer,
     LabourWagePaymentSerializer,
 )
 
@@ -91,6 +93,16 @@ def is_buyer(user):
         user
         and user.is_authenticated
         and BuyerProfile.objects.filter(user=user).exists()
+    )
+
+
+def create_notification(user, notification_type, title, message, target_url):
+    Notification.objects.create(
+        user=user,
+        notification_type=notification_type,
+        title=title,
+        message=message,
+        target_url=target_url,
     )
 
 
@@ -404,18 +416,22 @@ class LabourEstateRequestViewSet(viewsets.ModelViewSet):
 
         if is_admin(user):
             return LabourEstateRequest.objects.select_related(
-                "labour", "estate"
+                "labour", "labour__labourprofile", "estate"
             ).all().order_by("-id")
 
         if is_estate_owner(user):
             return LabourEstateRequest.objects.filter(
                 estate__owner=user
-            ).select_related("labour", "estate").order_by("-id")
+            ).select_related(
+                "labour", "labour__labourprofile", "estate"
+            ).order_by("-id")
 
         if is_labour(user):
             return LabourEstateRequest.objects.filter(
                 labour=user
-            ).select_related("labour", "estate").order_by("-id")
+            ).select_related(
+                "labour", "labour__labourprofile", "estate"
+            ).order_by("-id")
 
         return LabourEstateRequest.objects.none()
 
@@ -460,7 +476,30 @@ class LabourEstateRequestViewSet(viewsets.ModelViewSet):
                 "You already have a pending request for this estate."
             )
 
-        serializer.save(labour=user)
+        previous_request = LabourEstateRequest.objects.filter(
+            labour=user,
+            estate=estate,
+        ).first()
+
+        if previous_request:
+            previous_request.status = "PENDING"
+            previous_request.message = serializer.validated_data.get(
+                "message",
+                "",
+            )
+            previous_request.requested_at = timezone.now()
+            previous_request.responded_at = None
+            previous_request.save(
+                update_fields=[
+                    "status",
+                    "message",
+                    "requested_at",
+                    "responded_at",
+                ]
+            )
+            serializer.instance = previous_request
+        else:
+            serializer.save(labour=user)
 
     @action(detail=True, methods=["post"])
     @transaction.atomic
@@ -917,17 +956,30 @@ class InventoryViewSet(viewsets.ModelViewSet):
 
         serializer.save()
 
+    @transaction.atomic
     def perform_update(self, serializer):
         user = self.request.user
         require_admin_or_owner(user)
 
         inventory = self.get_object()
+        previous_quantity = inventory.stock_quantity
         estate = serializer.validated_data.get(
             "estate", inventory.estate
         )
         require_estate_access(user, estate)
 
-        serializer.save()
+        inventory = serializer.save()
+        if previous_quantity > 0 and inventory.stock_quantity == 0:
+            create_notification(
+                inventory.estate.owner,
+                "INVENTORY",
+                "Stock depleted",
+                (
+                    f"{inventory.get_category_display()} at "
+                    f"{inventory.estate.name} is out of stock."
+                ),
+                "/dashboard/inventory",
+            )
 
     def perform_destroy(self, instance):
         require_admin_or_owner(self.request.user)
@@ -1134,6 +1186,13 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
             total_price=total_price,
             status="PENDING",
         )
+        create_notification(
+            estate.owner,
+            "ORDER",
+            "New purchase order",
+            f"{user.username} placed order #{serializer.instance.pk}.",
+            "/dashboard/orders",
+        )
 
     def perform_update(self, serializer):
         user = self.request.user
@@ -1224,6 +1283,13 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
         order.status = "APPROVED"
         order.save(update_fields=["status", "updated_at"])
+        create_notification(
+            order.buyer,
+            "ORDER",
+            "Order approved",
+            f"Your order #{order.pk} was approved.",
+            "/dashboard/orders",
+        )
 
         invoice = Invoice.objects.filter(order=order).first()
 
@@ -1237,6 +1303,18 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
                 payment_status="UNPAID",
             )
 
+        if inventory.stock_quantity == 0:
+            create_notification(
+                order.estate.owner,
+                "INVENTORY",
+                "Stock depleted",
+                (
+                    f"{inventory.get_category_display()} at "
+                    f"{order.estate.name} is out of stock."
+                ),
+                "/dashboard/inventory",
+            )
+
         return Response({
             "message": "Order approved and invoice generated.",
             "order_id": order.pk,
@@ -1245,6 +1323,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         })
 
     @action(detail=True, methods=["post"])
+    @transaction.atomic
     def reject(self, request, pk=None):
         require_admin_or_owner(request.user)
 
@@ -1265,6 +1344,13 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
 
         order.status = "CANCELLED"
         order.save(update_fields=["status", "updated_at"])
+        create_notification(
+            order.buyer,
+            "ORDER",
+            "Order rejected",
+            f"Your order #{order.pk} was rejected.",
+            "/dashboard/orders",
+        )
 
         return Response({"message": "Order cancelled."})
 
@@ -1332,6 +1418,45 @@ class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
             ).order_by("-id")
 
         return Payment.objects.none()
+
+
+class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(
+            user=self.request.user
+        ).order_by("-created_at")
+
+    def list(self, request, *args, **kwargs):
+        notifications = self.filter_queryset(self.get_queryset())[:50]
+        serializer = self.get_serializer(notifications, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="unread-count")
+    def unread_count(self, request):
+        count = Notification.objects.filter(
+            user=request.user,
+            is_read=False,
+        ).count()
+        return Response({"count": count})
+
+    @action(detail=True, methods=["post"], url_path="mark-read")
+    def mark_read(self, request, pk=None):
+        notification = self.get_object()
+        if not notification.is_read:
+            notification.is_read = True
+            notification.save(update_fields=["is_read"])
+        return Response(self.get_serializer(notification).data)
+
+    @action(detail=False, methods=["post"], url_path="mark-all-read")
+    def mark_all_read(self, request):
+        Notification.objects.filter(
+            user=request.user,
+            is_read=False,
+        ).update(is_read=True)
+        return Response({"message": "All notifications marked as read."})
 
 
 # =========================================================
@@ -1422,8 +1547,8 @@ class LabourWagePaymentViewSet(viewsets.ModelViewSet):
         already_paid = LabourWagePayment.objects.filter(
             labour=labour,
             estate=estate,
-            period_start=period_start,
-            period_end=period_end,
+            period_start__gte=period_start,
+            period_end__lte=period_end,
             status="PAID",
         ).aggregate(total=Sum("amount"))["total"] or Decimal("0")
 
@@ -1445,7 +1570,7 @@ class LabourWagePaymentViewSet(viewsets.ModelViewSet):
         serializer.save(
             status="PAID",
             recorded_by=user,
-            payment_date=timezone.now(),
+            payment_date=timezone.localdate(),
         )
 
 
@@ -1713,15 +1838,42 @@ class CreateRazorpayOrderView(APIView):
             status="SUCCESS",
         ).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
 
-        remaining = invoice.amount - successful_payments
-
-        if remaining <= 0:
+        if successful_payments >= invoice.amount:
             raise ValidationError(
-                "No payment balance remains on this invoice."
+                "This invoice has no outstanding balance."
             )
 
+        if invoice.amount <= 0:
+            raise ValidationError(
+                "This invoice does not have a valid payment amount."
+            )
+
+        remaining = invoice.amount - successful_payments
+        payment_type = str(
+            request.data.get("payment_type", "FULL")
+        ).upper()
+
+        if successful_payments > 0:
+            payment_amount = remaining
+        elif payment_type == "HALF":
+            total_paise = int(
+                (invoice.amount * Decimal("100")).quantize(Decimal("1"))
+            )
+            half_paise = total_paise // 2
+            if half_paise <= 0:
+                raise ValidationError(
+                    "This invoice is too small to split into two payments."
+                )
+            payment_amount = Decimal(half_paise) / Decimal("100")
+        elif payment_type == "FULL":
+            payment_amount = invoice.amount
+        else:
+            raise ValidationError({
+                "payment_type": "Choose either HALF or FULL."
+            })
+
         amount_paise = int(
-            (remaining * Decimal("100")).quantize(Decimal("1"))
+            (payment_amount * Decimal("100")).quantize(Decimal("1"))
         )
 
         client = get_razorpay_client()
@@ -1750,7 +1902,7 @@ class CreateRazorpayOrderView(APIView):
         payment = Payment.objects.create(
             invoice=invoice,
             buyer=user,
-            amount=remaining,
+            amount=payment_amount,
             payment_method="RAZORPAY",
             transaction_id=razorpay_order["id"],
             status="PENDING",
@@ -1936,6 +2088,21 @@ class VerifyRazorpayPaymentView(APIView):
             "payment_method",
             "transaction_reference",
         ])
+        recipients = {
+            user.pk: user,
+            invoice.order.estate.owner_id: invoice.order.estate.owner,
+        }
+        for recipient in recipients.values():
+            create_notification(
+                recipient,
+                "PAYMENT",
+                "Payment received",
+                (
+                    f"Payment of ₹{payment.amount} was received for "
+                    f"invoice {invoice.invoice_number}."
+                ),
+                "/dashboard/invoices",
+            )
 
         return Response({
             "message": "Payment verified successfully.",
@@ -2170,4 +2337,3 @@ def export_my_orders_csv(request):
         ])
 
     return response
-

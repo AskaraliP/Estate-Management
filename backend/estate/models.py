@@ -1537,6 +1537,41 @@ class Payment(models.Model):
         )
 
 
+class Notification(models.Model):
+    TYPE_CHOICES = [
+        ("ORDER", "Order"),
+        ("PAYMENT", "Payment"),
+        ("INVENTORY", "Inventory"),
+    ]
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+    notification_type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+    )
+    title = models.CharField(max_length=160)
+    message = models.CharField(max_length=500)
+    target_url = models.CharField(max_length=255, blank=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(
+                fields=["user", "is_read", "-created_at"],
+                name="estate_notif_user_read_idx",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.title} for {self.user.username}"
+
+
 
 # =========================================================
 # LABOUR WAGE PAYMENT

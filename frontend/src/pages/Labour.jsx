@@ -5,7 +5,9 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { Check, X } from "lucide-react";
 import API from "../api/client";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Labour.css";
 
 const getList = (data) => {
@@ -151,9 +153,17 @@ const INITIAL_FORM = {
 };
 
 export default function Labour() {
+  const { user } = useAuth();
+  const role = String(user?.role ?? localStorage.getItem("user_role") ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+  const canManageLabour = role === "admin" || role === "estate_owner";
   const [labours, setLabours] = useState([]);
   const [estates, setEstates] = useState([]);
+  const [labourRequests, setLabourRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingRequestId, setProcessingRequestId] = useState(null);
 
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -171,16 +181,36 @@ export default function Labour() {
     setError("");
 
     try {
-      const [labourResult, estateResult] = await Promise.all([
+      const results = await Promise.allSettled([
         API.get("labour-profiles/"),
         API.get("estates/"),
+        canManageLabour
+          ? API.get("labour-estate-requests/")
+          : Promise.resolve(null),
       ]);
 
-      const labourList = getList(labourResult.data);
-      const estateList = getList(estateResult.data);
+      if (results[0].status === "rejected") {
+        throw results[0].reason;
+      }
+
+      const labourList = getList(results[0].value.data);
+      const estateList =
+        results[1].status === "fulfilled"
+          ? getList(results[1].value.data)
+          : [];
 
       setLabours(labourList);
       setEstates(estateList);
+
+      if (canManageLabour) {
+        if (results[2].status === "fulfilled") {
+          setLabourRequests(getList(results[2].value.data));
+        } else {
+          throw results[2].reason;
+        }
+      } else {
+        setLabourRequests([]);
+      }
 
       setEstateFilter((current) => {
         if (
@@ -202,7 +232,7 @@ export default function Labour() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [canManageLabour]);
 
   useEffect(() => {
     loadData();
@@ -285,6 +315,36 @@ export default function Labour() {
     }
   };
 
+  const handleLabourRequest = async (request, action) => {
+    setError("");
+    setSuccessMessage("");
+    setProcessingRequestId(request.id);
+
+    try {
+      await API.post(
+        `labour-estate-requests/${request.id}/${action}/`
+      );
+      setSuccessMessage(
+        action === "approve"
+          ? `${request.labour_full_name || request.labour_name} has been approved and assigned to ${request.estate_name}.`
+          : "Labour request rejected."
+      );
+      await loadData();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setProcessingRequestId(null);
+    }
+  };
+
+  const pendingRequests = useMemo(
+    () =>
+      labourRequests.filter(
+        (request) => request.status === "PENDING"
+      ),
+    [labourRequests]
+  );
+
   const filteredLabours = useMemo(() => {
     const term = search.trim().toLowerCase();
 
@@ -343,13 +403,15 @@ export default function Labour() {
         </div>
 
         <div className="labour-header-actions">
-          <button
-            type="button"
-            className="labour-add-btn"
-            onClick={openAddForm}
-          >
-            + Add Labour
-          </button>
+          {canManageLabour && (
+            <button
+              type="button"
+              className="labour-add-btn"
+              onClick={openAddForm}
+            >
+              + Add Labour
+            </button>
+          )}
 
           <button
             type="button"
@@ -376,7 +438,7 @@ export default function Labour() {
         </div>
       )}
 
-      {showAddForm && (
+      {showAddForm && canManageLabour && (
         <div className="labour-form-panel">
           <div className="labour-form-heading">
             <div>
@@ -516,6 +578,82 @@ export default function Labour() {
             </div>
           </form>
         </div>
+      )}
+
+      {canManageLabour && (
+        <section className="labour-requests-panel">
+          <div className="labour-requests-heading">
+            <div>
+              <h2>Pending Estate Approvals</h2>
+              <p>
+                Review labour requests and approve workers to join your estate.
+              </p>
+            </div>
+            <span className="labour-pending-count">
+              {pendingRequests.length} pending
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="labour-requests-empty">
+              Loading pending requests...
+            </div>
+          ) : pendingRequests.length === 0 ? (
+            <div className="labour-requests-empty">
+              No pending labour requests.
+            </div>
+          ) : (
+            <div className="labour-requests-list">
+              {pendingRequests.map((request) => (
+                <article className="labour-request-row" key={request.id}>
+                  <div className="labour-request-info">
+                    <strong>
+                      {request.labour_full_name || request.labour_name}
+                    </strong>
+                    <span>Username: {request.labour_name}</span>
+                    {request.labour_phone && (
+                      <span>Phone: {request.labour_phone}</span>
+                    )}
+                    <span>Estate: {request.estate_name}</span>
+                    <span>
+                      Requested:{" "}
+                      {request.requested_at
+                        ? new Date(request.requested_at).toLocaleString()
+                        : "—"}
+                    </span>
+                  </div>
+
+                  <div className="labour-request-actions">
+                    <button
+                      type="button"
+                      className="labour-request-approve"
+                      onClick={() =>
+                        handleLabourRequest(request, "approve")
+                      }
+                      disabled={processingRequestId === request.id}
+                    >
+                      <Check size={16} />
+                      {processingRequestId === request.id
+                        ? "Processing..."
+                        : "Approve"}
+                    </button>
+                    <button
+                      type="button"
+                      className="labour-request-reject"
+                      onClick={() =>
+                        handleLabourRequest(request, "reject")
+                      }
+                      disabled={processingRequestId === request.id}
+                    >
+                      <X size={16} />
+                      Reject
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
       )}
 
       <div className="labour-summary">
