@@ -1163,3 +1163,108 @@
   }
 
 }
+
+/* Refined dashboard presentation */
+.overview-page {
+  padding: clamp(18px, 2.7vw, 34px);
+}
+
+.overview-header {
+  position: relative;
+  isolation: isolate;
+  min-height: 166px;
+  padding: 28px 32px;
+  overflow: hidden;
+  border: 1px solid #1e6440;
+  border-radius: 22px;
+  background: linear-gradient(118deg, #123f2b 0%, #17613d 63%, #247d4e 100%);
+  box-shadow: 0 12px 30px rgb(19 63 42 / 14%);
+}
+
+.overview-header::after {
+  position: absolute;
+  z-index: -1;
+  top: -110px;
+  right: -52px;
+  width: 290px;
+  height: 290px;
+  border: 1px solid rgb(255 255 255 / 13%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 10%), transparent 68%);
+  content: "";
+}
+
+.overview-header > div,
+.overview-header > button {
+  position: relative;
+  z-index: 1;
+}
+
+.overview-eyebrow {
+  color: #b7e5c4;
+}
+
+.overview-header h1 {
+  color: #fff;
+  font-size: clamp(26px, 2.5vw, 34px);
+}
+
+.overview-subtitle {
+  color: rgb(255 255 255 / 76%);
+}
+
+.overview-refresh-btn {
+  border-color: rgb(255 255 255 / 45%);
+  background: #fff;
+  color: #155936;
+}
+
+.overview-refresh-btn:hover {
+  border-color: #fff;
+  background: #eaf5ed;
+}
+
+.overview-stat-card,
+.overview-secondary-card,
+.overview-panel {
+  border-color: #e0eae2;
+  border-radius: 18px;
+  box-shadow: 0 5px 18px rgb(22 50 31 / 4%);
+}
+
+.overview-page.buyer .overview-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.overview-page.buyer .overview-secondary-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+  .overview-page.buyer .overview-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .overview-header {
+    min-height: 0;
+    padding: 24px;
+    border-radius: 18px;
+  }
+
+  .overview-page.buyer .overview-secondary-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .overview-header {
+    padding: 20px;
+  }
+
+  .overview-page.buyer .overview-stats,
+  .overview-page.buyer .overview-secondary-stats {
+    grid-template-columns: 1fr;
+  }
+}
