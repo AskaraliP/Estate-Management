@@ -12,6 +12,27 @@ const getAmount = (value) => {
   return Number.isFinite(amount) ? amount : 0;
 };
 
+const getApiErrorMessage = (data) => {
+  if (typeof data === "string") return data;
+  if (Array.isArray(data)) return data.map(String).join(", ");
+  if (typeof data?.detail === "string") return data.detail;
+  if (typeof data?.message === "string") return data.message;
+
+  if (data && typeof data === "object") {
+    return Object.entries(data)
+      .map(([field, messages]) =>
+        `${field}: ${
+          Array.isArray(messages)
+            ? messages.map(String).join(", ")
+            : String(messages)
+        }`
+      )
+      .join("; ");
+  }
+
+  return "";
+};
+
 const getInvoiceTotal = (invoice) =>
   Math.max(
     0,
@@ -424,11 +445,10 @@ export default function Invoices() {
               finish(resolve);
             } catch (verificationError) {
               showPaymentMessage(
-                verificationError.response?.data?.detail ??
-                  verificationError.response?.data?.message ??
+                  getApiErrorMessage(verificationError.response?.data) ||
                   (verificationError.code === "ECONNABORTED"
                     ? "Payment verification timed out. Check payment status before retrying."
-                    : undefined) ??
+                    : "") ||
                   "Payment verification could not be confirmed. Do not retry until you check the payment status.",
                   "error"
               );
@@ -465,12 +485,11 @@ export default function Invoices() {
       });
     } catch (err) {
       const message =
-        err.response?.data?.detail ??
-        err.response?.data?.message ??
+        getApiErrorMessage(err.response?.data) ||
         (err.code === "ECONNABORTED"
           ? "The payment service took too long to respond. Please try again."
-          : undefined) ??
-        err.message ??
+          : "") ||
+        err.message ||
         "Unable to start payment.";
 
       // Do not replace a more specific verification warning.

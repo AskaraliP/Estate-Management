@@ -51,6 +51,27 @@ const getArray = (data) =>
       ? data.results
       : [];
 
+const getApiErrorMessage = (data) => {
+  if (typeof data === "string") return data;
+  if (Array.isArray(data)) return data.map(String).join(", ");
+  if (typeof data?.detail === "string") return data.detail;
+  if (typeof data?.message === "string") return data.message;
+
+  if (data && typeof data === "object") {
+    return Object.entries(data)
+      .map(([field, messages]) =>
+        `${field}: ${
+          Array.isArray(messages)
+            ? messages.map(String).join(", ")
+            : String(messages)
+        }`
+      )
+      .join("; ");
+  }
+
+  return "";
+};
+
 const currency = (value) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -290,7 +311,7 @@ export default function Payments() {
             );
 
             window.alert(
-              verifyError.response?.data?.detail ||
+              getApiErrorMessage(verifyError.response?.data) ||
                 "Payment verification could not be completed. Please refresh and check the payment status before trying again."
             );
 
@@ -330,9 +351,7 @@ export default function Payments() {
 
       const responseData = err.response?.data;
       const message =
-        responseData?.detail ||
-        responseData?.invoice?.[0] ||
-        responseData?.amount?.[0] ||
+        getApiErrorMessage(responseData) ||
         (err.code === "ECONNABORTED"
           ? "The payment service took too long to respond. Please try again."
           : err.message) ||
