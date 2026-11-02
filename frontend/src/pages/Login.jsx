@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  Eye,
+  EyeOff,
+  UserRound,
+  LockKeyhole,
   ArrowRight,
   Sprout,
   ShoppingBasket,
@@ -146,6 +150,10 @@ export default function Login() {
 
         <section className="login-column-card login-form-column">
           <div className="login-heading">
+            <div className="login-heading-icon">
+              <UserRound size={22} />
+            </div>
+
             <p className="login-form-eyebrow">WELCOME BACK</p>
 
             <h1>Sign in to your account</h1>
@@ -169,6 +177,8 @@ export default function Login() {
               <label htmlFor="login-username">Username</label>
 
               <div className="login-input-wrap">
+                <UserRound size={18} aria-hidden="true" />
+
                 <input
                   id="login-username"
                   type="text"
@@ -191,6 +201,8 @@ export default function Login() {
               <label htmlFor="login-password">Password</label>
 
               <div className="login-input-wrap">
+                <LockKeyhole size={18} aria-hidden="true" />
+
                 <input
                   id="login-password"
                   type={showPassword ? "text" : "password"}
@@ -215,7 +227,11 @@ export default function Login() {
                   aria-pressed={showPassword}
                   disabled={loading}
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
@@ -256,19 +272,19 @@ export default function Login() {
       <footer className="login-feature-strip" aria-label="Platform features">
         <div className="login-feature">
           <Sprout size={22} aria-hidden="true" />
-          <span>Estate records<br />and ownership</span>
+          <span>Efficient Estate<br />Management</span>
         </div>
         <div className="login-feature">
           <Users size={22} aria-hidden="true" />
-          <span>Attendance<br />and wages</span>
+          <span>Empowered<br />Workforce</span>
         </div>
         <div className="login-feature">
           <ShoppingBasket size={22} aria-hidden="true" />
-          <span>Harvest<br />and inventory</span>
+          <span>Smart Inventory<br />&amp; Orders</span>
         </div>
         <div className="login-feature">
           <ShieldCheck size={22} aria-hidden="true" />
-          <span>Buyer orders<br />and invoices</span>
+          <span>Secure &amp; Reliable<br />Platform</span>
         </div>
       </footer>
     </section>

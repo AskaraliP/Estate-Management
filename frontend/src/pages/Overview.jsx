@@ -415,7 +415,7 @@ export default function Overview() {
     .slice(0, 5);
 
   return (
-    <section className={`overview-page${isBuyer ? " buyer" : ""}`}>
+    <section className="overview-page">
       <header className="overview-header">
         <div>
           <p className="overview-eyebrow">

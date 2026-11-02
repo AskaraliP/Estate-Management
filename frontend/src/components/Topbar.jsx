@@ -3,6 +3,7 @@ import {
   Menu,
   Bell,
   UserCircle,
+  ChevronDown,
   CheckCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -251,6 +252,7 @@ function Topbar({ onMenuClick, title = "Dashboard" }) {
             <span className="topbar-user-role">{formatRole(role)}</span>
           </div>
 
+          <ChevronDown size={16} className="topbar-chevron" />
         </div>
       </div>
     </header>

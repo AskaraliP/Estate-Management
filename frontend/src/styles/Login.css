@@ -194,7 +194,7 @@
 .login-input-wrap {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 11px;
   width: 100%;
   min-width: 0;
   min-height: 51px;
@@ -263,10 +263,10 @@
 
 .login-password-toggle {
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 0 32px;
   align-items: center;
   justify-content: center;
-  min-width: 42px;
+  width: 32px;
   height: 34px;
   margin: 0;
   padding: 0;
@@ -275,9 +275,6 @@
   background: transparent;
   color: #647895;
   cursor: pointer;
-  font: inherit;
-  font-size: 11px;
-  font-weight: 650;
   transition:
     background 0.2s ease,
     color 0.2s ease;
@@ -1543,57 +1540,5 @@
 
   .login-single-page .login-signup-prompt {
     padding-top: 8px;
-  }
-}
-
-/* Clearer, higher-contrast sign-in card over the estate imagery. */
-.login-single-page .login-form-column {
-  gap: 16px;
-  padding: clamp(24px, 3vw, 34px);
-  border: 1px solid rgb(255 255 255 / 82%);
-  border-radius: 24px;
-  background: rgb(255 255 255 / 96%);
-  box-shadow: 0 24px 70px rgb(3 28 17 / 30%);
-}
-
-.login-single-page .login-heading-icon {
-  color: #fff;
-  background: linear-gradient(145deg, #25844c, #145632);
-  box-shadow: 0 7px 18px rgb(20 86 50 / 20%);
-}
-
-.login-single-page .login-heading h1 {
-  color: #153b29;
-  letter-spacing: -0.9px;
-}
-
-.login-single-page .login-input-wrap {
-  border-color: #d7e4da;
-  background: #fbfdfb;
-}
-
-.login-single-page .login-input-wrap:focus-within {
-  border-color: #23834b;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgb(35 131 75 / 10%);
-}
-
-.login-single-page .login-submit-button {
-  border-color: #155936;
-  border-radius: 13px;
-  background: linear-gradient(105deg, #17623b, #21804a);
-  box-shadow: 0 7px 16px rgb(21 89 54 / 16%);
-}
-
-.login-single-page .login-submit-button:hover:not(:disabled) {
-  border-color: #124a2e;
-  background: linear-gradient(105deg, #124a2e, #17623b);
-}
-
-@media (max-width: 700px) {
-  .login-single-page .login-form-column {
-    gap: 14px;
-    padding: 24px 20px;
-    border-radius: 21px;
   }
 }
