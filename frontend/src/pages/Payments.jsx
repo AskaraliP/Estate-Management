@@ -5,6 +5,7 @@ import "../styles/Payments.css";
 
 const RAZORPAY_SCRIPT_URL =
   "https://checkout.razorpay.com/v1/checkout.js";
+const RAZORPAY_SCRIPT_TIMEOUT_MS = 15000;
 
 let razorpayScriptPromise = null;
 
@@ -18,8 +19,21 @@ const loadRazorpayScript = () => {
     script.src = RAZORPAY_SCRIPT_URL;
     script.async = true;
 
-    script.onload = () => resolve(Boolean(window.Razorpay));
+    const timeoutId = window.setTimeout(() => {
+      script.remove();
+      razorpayScriptPromise = null;
+      resolve(false);
+    }, RAZORPAY_SCRIPT_TIMEOUT_MS);
+
+    script.onload = () => {
+      window.clearTimeout(timeoutId);
+      const loaded = Boolean(window.Razorpay);
+      if (!loaded) razorpayScriptPromise = null;
+      resolve(loaded);
+    };
     script.onerror = () => {
+      window.clearTimeout(timeoutId);
+      script.remove();
       razorpayScriptPromise = null;
       resolve(false);
     };
@@ -205,10 +219,16 @@ export default function Payments() {
       }
 
       // Create an order on your authenticated Django backend.
-      const response = await API.post("razorpay/create-order/", {
-        invoice: invoice.id,
-        payment_type: paymentType,
-      });
+      const response = await API.post(
+        "razorpay/create-order/",
+        {
+          invoice: invoice.id,
+          payment_type: paymentType,
+        },
+        {
+          timeout: 45000,
+        }
+      );
 
       const orderData = response.data || {};
       const key = orderData.key || orderData.key_id;
@@ -242,15 +262,21 @@ export default function Payments() {
         handler: async (checkoutResponse) => {
           try {
             // Verify the signature on the Django backend.
-            await API.post("razorpay/verify-payment/", {
-              invoice: invoice.id,
-              razorpay_order_id:
-                checkoutResponse.razorpay_order_id,
-              razorpay_payment_id:
-                checkoutResponse.razorpay_payment_id,
-              razorpay_signature:
-                checkoutResponse.razorpay_signature,
-            });
+            await API.post(
+              "razorpay/verify-payment/",
+              {
+                invoice: invoice.id,
+                razorpay_order_id:
+                  checkoutResponse.razorpay_order_id,
+                razorpay_payment_id:
+                  checkoutResponse.razorpay_payment_id,
+                razorpay_signature:
+                  checkoutResponse.razorpay_signature,
+              },
+              {
+                timeout: 45000,
+              }
+            );
 
             window.alert(
               "Payment verified successfully!"
@@ -307,7 +333,9 @@ export default function Payments() {
         responseData?.detail ||
         responseData?.invoice?.[0] ||
         responseData?.amount?.[0] ||
-        err.message ||
+        (err.code === "ECONNABORTED"
+          ? "The payment service took too long to respond. Please try again."
+          : err.message) ||
         "Unable to start payment. Please try again.";
 
       setError(

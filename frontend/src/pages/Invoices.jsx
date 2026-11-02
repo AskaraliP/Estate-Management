@@ -128,12 +128,32 @@ const loadRazorpayScript = () =>
     );
 
     if (existingScript) {
-      existingScript.addEventListener("load", () =>
-        resolve(Boolean(window.Razorpay))
+      const timeoutId = window.setTimeout(() => {
+        existingScript.remove();
+        reject(new Error("Razorpay checkout took too long to load."));
+      }, 15000);
+
+      existingScript.addEventListener(
+        "load",
+        () => {
+          window.clearTimeout(timeoutId);
+          if (window.Razorpay) {
+            resolve(true);
+          } else {
+            reject(new Error("Razorpay checkout did not initialize."));
+          }
+        },
+        { once: true }
       );
 
-      existingScript.addEventListener("error", () =>
-        reject(new Error("Unable to load Razorpay checkout."))
+      existingScript.addEventListener(
+        "error",
+        () => {
+          window.clearTimeout(timeoutId);
+          existingScript.remove();
+          reject(new Error("Unable to load Razorpay checkout."));
+        },
+        { once: true }
       );
 
       return;
@@ -146,7 +166,13 @@ const loadRazorpayScript = () =>
 
     script.async = true;
 
+    const timeoutId = window.setTimeout(() => {
+      script.remove();
+      reject(new Error("Razorpay checkout took too long to load."));
+    }, 15000);
+
     script.onload = () => {
+      window.clearTimeout(timeoutId);
       if (window.Razorpay) {
         resolve(true);
       } else {
@@ -156,10 +182,11 @@ const loadRazorpayScript = () =>
       }
     };
 
-    script.onerror = () =>
-      reject(
-        new Error("Unable to load Razorpay checkout.")
-      );
+    script.onerror = () => {
+      window.clearTimeout(timeoutId);
+      script.remove();
+      reject(new Error("Unable to load Razorpay checkout."));
+    };
 
     document.body.appendChild(script);
   });
@@ -275,6 +302,9 @@ export default function Invoices() {
         {
           invoice: invoiceId,
           payment_type: paymentType,
+        },
+        {
+          timeout: 45000,
         }
       );
 
@@ -377,6 +407,9 @@ export default function Invoices() {
                     razorpayResponse.razorpay_payment_id,
                   razorpay_signature:
                     razorpayResponse.razorpay_signature,
+                },
+                {
+                  timeout: 45000,
                 }
               );
 
@@ -393,8 +426,11 @@ export default function Invoices() {
               showPaymentMessage(
                 verificationError.response?.data?.detail ??
                   verificationError.response?.data?.message ??
+                  (verificationError.code === "ECONNABORTED"
+                    ? "Payment verification timed out. Check payment status before retrying."
+                    : undefined) ??
                   "Payment verification could not be confirmed. Do not retry until you check the payment status.",
-                "error"
+                  "error"
               );
 
               // Refresh in case the server recorded the payment
@@ -431,6 +467,9 @@ export default function Invoices() {
       const message =
         err.response?.data?.detail ??
         err.response?.data?.message ??
+        (err.code === "ECONNABORTED"
+          ? "The payment service took too long to respond. Please try again."
+          : undefined) ??
         err.message ??
         "Unable to start payment.";
 

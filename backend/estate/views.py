@@ -1,5 +1,6 @@
 
 import csv
+import logging
 import uuid
 from decimal import Decimal, InvalidOperation
 from django.db import transaction
@@ -56,6 +57,8 @@ from .serializers import (
     NotificationSerializer,
     LabourWagePaymentSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -1890,14 +1893,13 @@ class CreateRazorpayOrderView(APIView):
                     "invoice_id": str(invoice.pk),
                     "buyer_id": str(user.pk),
                 },
-            })
+            }, timeout=(10, 30))
         except Exception as exc:
-            # Details appear in the Django terminal for debugging.
-            print("Razorpay order creation failed:", str(exc))
+            logger.exception("Razorpay order creation failed")
             raise ValidationError(
-                "Unable to create Razorpay order. Check your "
-                "Razorpay credentials and Django terminal."
-            )
+                "Unable to contact Razorpay to create the payment order. "
+                "Please try again."
+            ) from exc
 
         payment = Payment.objects.create(
             invoice=invoice,
