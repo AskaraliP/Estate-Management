@@ -5,7 +5,15 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Check, X } from "lucide-react";
+import {
+  Building2,
+  Check,
+  Mail,
+  Phone,
+  UserRound,
+  Wallet,
+  X,
+} from "lucide-react";
 import API from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import "../styles/Labour.css";
@@ -386,24 +394,45 @@ export default function Labour() {
   );
 
   const unassignedCount = labours.length - assignedCount;
+  const ownLabourProfile = useMemo(() => {
+    if (role !== "labour") return null;
+
+    const userId = normalizeId(user?.id);
+    const profileId = normalizeId(user?.labour_profile_id);
+
+    return (
+      labours.find(
+        (labour) =>
+          userId &&
+          normalizeId(labour.user?.id ?? labour.user_id) === userId
+      ) ||
+      labours.find(
+        (labour) =>
+          profileId &&
+          normalizeId(labour.id ?? labour.pk) === profileId
+      ) ||
+      labours[0] ||
+      null
+    );
+  }, [labours, role, user?.id, user?.labour_profile_id]);
 
   return (
     <section className="labour-page">
-      <header className="labour-header">
-        <div>
-          <p className="labour-eyebrow">
-            RUBBER ESTATE MANAGEMENT
-          </p>
+      {canManageLabour ? (
+        <header className="labour-header">
+          <div>
+            <p className="labour-eyebrow">
+              RUBBER ESTATE MANAGEMENT
+            </p>
 
-          <h1>Labour Management</h1>
+            <h1>Labour Management</h1>
 
-          <p className="labour-subtitle">
-            Manage worker profiles and their estate assignments.
-          </p>
-        </div>
+            <p className="labour-subtitle">
+              Manage worker profiles and their estate assignments.
+            </p>
+          </div>
 
-        <div className="labour-header-actions">
-          {canManageLabour && (
+          <div className="labour-header-actions">
             <button
               type="button"
               className="labour-add-btn"
@@ -411,7 +440,97 @@ export default function Labour() {
             >
               + Add Labour
             </button>
-          )}
+            <button
+              type="button"
+              className="labour-refresh-btn"
+              onClick={loadData}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "↻ Refresh"}
+            </button>
+          </div>
+        </header>
+      ) : (
+        <section
+          className="labour-profile-banner"
+          aria-labelledby="labour-profile-title"
+        >
+          <div className="labour-profile-identity">
+            <div className="labour-profile-avatar" aria-hidden="true">
+              {getLabourName(ownLabourProfile || {}).charAt(0).toUpperCase()}
+            </div>
+            <div className="labour-profile-heading">
+              <p className="labour-eyebrow">MY PROFILE</p>
+              <h1 id="labour-profile-title">
+                {ownLabourProfile
+                  ? getLabourName(ownLabourProfile)
+                  : user?.username || "My Profile"}
+              </h1>
+              <p className="labour-subtitle">
+                Your personal information and estate assignment.
+              </p>
+            </div>
+          </div>
+
+          <div className="labour-profile-details">
+            <div className="labour-profile-detail">
+              <UserRound size={16} aria-hidden="true" />
+              <span>
+                <small>Username</small>
+                <strong>
+                  {ownLabourProfile?.user?.username ||
+                    ownLabourProfile?.username ||
+                    user?.username ||
+                    "—"}
+                </strong>
+              </span>
+            </div>
+            <div className="labour-profile-detail">
+              <Phone size={16} aria-hidden="true" />
+              <span>
+                <small>Phone</small>
+                <strong>
+                  {ownLabourProfile?.phone_number ||
+                    ownLabourProfile?.phone ||
+                    "Not provided"}
+                </strong>
+              </span>
+            </div>
+            <div className="labour-profile-detail">
+              <Mail size={16} aria-hidden="true" />
+              <span>
+                <small>Email</small>
+                <strong>
+                  {ownLabourProfile?.email ||
+                    ownLabourProfile?.user?.email ||
+                    user?.email ||
+                    "Not provided"}
+                </strong>
+              </span>
+            </div>
+            <div className="labour-profile-detail">
+              <Building2 size={16} aria-hidden="true" />
+              <span>
+                <small>Assigned estate</small>
+                <strong>
+                  {ownLabourProfile
+                    ? getEstateName(ownLabourProfile, estates)
+                    : user?.estate_name || "Not assigned"}
+                </strong>
+              </span>
+            </div>
+            <div className="labour-profile-detail">
+              <Wallet size={16} aria-hidden="true" />
+              <span>
+                <small>Daily wage</small>
+                <strong>
+                  {ownLabourProfile?.daily_wage != null
+                    ? formatCurrency(ownLabourProfile.daily_wage)
+                    : "—"}
+                </strong>
+              </span>
+            </div>
+          </div>
 
           <button
             type="button"
@@ -421,8 +540,8 @@ export default function Labour() {
           >
             {loading ? "Loading..." : "↻ Refresh"}
           </button>
-        </div>
-      </header>
+        </section>
+      )}
 
       {successMessage && (
         <div className="labour-success" role="status">

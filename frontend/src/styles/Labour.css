@@ -33,6 +33,110 @@
   font-size: 14px;
 }
 
+.labour-profile-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px 24px;
+  margin-bottom: 26px;
+  padding: 22px 24px;
+  border: 1px solid #dfeae2;
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at 92% 0%, rgb(222 242 228 / 72%), transparent 42%),
+    #fff;
+  box-shadow: 0 5px 18px rgb(22 50 31 / 4%);
+}
+
+.labour-profile-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 15px;
+}
+
+.labour-profile-avatar {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 17px;
+  background: #e5f3e9;
+  box-shadow: 0 3px 12px rgb(22 50 31 / 8%);
+  color: #176b45;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.labour-profile-heading {
+  min-width: 0;
+}
+
+.labour-profile-heading .labour-eyebrow {
+  margin-bottom: 4px;
+  font-size: 9px;
+}
+
+.labour-profile-heading h1 {
+  margin: 0;
+  overflow: hidden;
+  color: #17291d;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+  text-overflow: ellipsis;
+}
+
+.labour-profile-heading .labour-subtitle {
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+.labour-profile-details {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  padding-top: 17px;
+  border-top: 1px solid #e8eee9;
+}
+
+.labour-profile-detail {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.labour-profile-detail > svg {
+  flex: 0 0 16px;
+  margin-top: 2px;
+  color: #43805a;
+}
+
+.labour-profile-detail > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.labour-profile-detail small {
+  color: #829087;
+  font-size: 9px;
+}
+
+.labour-profile-detail strong {
+  overflow: hidden;
+  color: #304137;
+  font-size: 10px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .labour-refresh-btn {
   padding: 11px 17px;
   border: 1px solid #dce5dd;
@@ -447,6 +551,16 @@
     padding: 15px;
   }
 
+  .labour-profile-banner {
+    gap: 16px;
+    padding: 19px;
+  }
+
+  .labour-profile-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+
   .labour-header h1 {
     font-size: 23px;
   }
@@ -479,6 +593,20 @@
   .labour-header {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .labour-profile-banner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 16px;
+  }
+
+  .labour-profile-banner > .labour-refresh-btn {
+    width: 100%;
+  }
+
+  .labour-profile-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .labour-refresh-btn {
