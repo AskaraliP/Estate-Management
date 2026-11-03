@@ -1,5 +1,18 @@
 
 import React, { useEffect, useState } from "react";
+import {
+  Building2,
+  CalendarCheck,
+  Check,
+  Clock3,
+  Leaf,
+  Package,
+  ReceiptText,
+  RefreshCw,
+  ShoppingCart,
+  UsersRound,
+  Wallet,
+} from "lucide-react";
 import API from "../api/client";
 import "../styles/Overview.css";
 
@@ -419,6 +432,7 @@ export default function Overview() {
       <header className="overview-header">
         <div>
           <p className="overview-eyebrow">
+            <Leaf size={14} aria-hidden="true" />
             RUBBER ESTATE MANAGEMENT
           </p>
 
@@ -433,6 +447,14 @@ export default function Overview() {
               ? "Manage your rubber purchases, orders and payments."
               : "Your estate operations at a glance."}
           </p>
+          <div className="overview-date">
+            {new Intl.DateTimeFormat("en-IN", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }).format(new Date())}
+          </div>
         </div>
 
         <button
@@ -441,7 +463,12 @@ export default function Overview() {
           onClick={() => loadOverview(userRole)}
           disabled={loading}
         >
-          {loading ? "Loading..." : "↻ Refresh"}
+          <RefreshCw
+            size={16}
+            className={loading ? "overview-refresh-spin" : ""}
+            aria-hidden="true"
+          />
+          {loading ? "Refreshing…" : "Refresh data"}
         </button>
       </header>
 
@@ -463,12 +490,12 @@ export default function Overview() {
           {isBuyer ? (
             <>
               {/* BUYER DASHBOARD CARDS */}
-              <div className="overview-stats">
+              <div className="overview-stats buyer-stats">
                 <article className="overview-stat-card">
                   <div className="overview-stat-top">
                     <span>Available Rubber Stock</span>
                     <div className="overview-stat-icon green">
-                      ♧
+                      <Leaf size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -485,7 +512,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>My Orders</span>
                     <div className="overview-stat-icon blue">
-                      ▤
+                      <ShoppingCart size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -502,7 +529,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>Pending Orders</span>
                     <div className="overview-stat-icon orange">
-                      ◷
+                      <Clock3 size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -519,7 +546,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>Outstanding Bills</span>
                     <div className="overview-stat-icon purple">
-                      ₹
+                      <ReceiptText size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -535,7 +562,7 @@ export default function Overview() {
               </div>
 
               {/* BUYER INVOICE AND PAYMENT SUMMARY */}
-              <div className="overview-secondary-stats">
+              <div className="overview-secondary-stats buyer-secondary-stats">
                 <article className="overview-secondary-card">
                   <div>
                     <span>My Invoices</span>
@@ -548,7 +575,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon pending">
-                    ▤
+                    <ReceiptText size={19} aria-hidden="true" />
                   </div>
                 </article>
 
@@ -564,7 +591,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon attendance">
-                    ✓
+                    <Check size={19} aria-hidden="true" />
                   </div>
                 </article>
 
@@ -581,7 +608,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon sales">
-                    ₹
+                    <Wallet size={19} aria-hidden="true" />
                   </div>
                 </article>
               </div>
@@ -589,12 +616,12 @@ export default function Overview() {
           ) : (
             <>
               {/* ADMIN / ESTATE MANAGEMENT CARDS */}
-              <div className="overview-stats">
+              <div className="overview-stats management-stats">
                 <article className="overview-stat-card">
                   <div className="overview-stat-top">
                     <span>Registered Buyers</span>
                     <div className="overview-stat-icon blue">
-                      ♙
+                      <UsersRound size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -609,7 +636,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>Estates</span>
                     <div className="overview-stat-icon green">
-                      ⌂
+                      <Building2 size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -624,7 +651,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>Labourers</span>
                     <div className="overview-stat-icon blue">
-                      ♙
+                      <UsersRound size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -639,7 +666,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>Verified Production</span>
                     <div className="overview-stat-icon purple">
-                      ⚖
+                      <Check size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -654,7 +681,7 @@ export default function Overview() {
                   <div className="overview-stat-top">
                     <span>Available Stock</span>
                     <div className="overview-stat-icon orange">
-                      ▤
+                      <Package size={21} aria-hidden="true" />
                     </div>
                   </div>
 
@@ -666,7 +693,7 @@ export default function Overview() {
                 </article>
               </div>
 
-              <div className="overview-secondary-stats">
+              <div className="overview-secondary-stats management-secondary-stats">
                 <article className="overview-secondary-card">
                   <div>
                     <span>Pending B2B Orders</span>
@@ -676,7 +703,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon pending">
-                    ◷
+                    <Clock3 size={19} aria-hidden="true" />
                   </div>
                 </article>
 
@@ -687,7 +714,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon attendance">
-                    ✓
+                    <CalendarCheck size={19} aria-hidden="true" />
                   </div>
                 </article>
 
@@ -700,7 +727,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon sales">
-                    ₹
+                    <ShoppingCart size={19} aria-hidden="true" />
                   </div>
                 </article>
 
@@ -716,7 +743,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon sales">
-                    ₹
+                    <Wallet size={19} aria-hidden="true" />
                   </div>
                 </article>
 
@@ -729,7 +756,7 @@ export default function Overview() {
                   </div>
 
                   <div className="overview-secondary-icon expenses">
-                    ↗
+                    <ReceiptText size={19} aria-hidden="true" />
                   </div>
                 </article>
               </div>
@@ -777,7 +804,7 @@ export default function Overview() {
                         key={order.id ?? index}
                       >
                         <div className="overview-record-icon order-icon">
-                          ▤
+                          <ShoppingCart size={18} aria-hidden="true" />
                         </div>
 
                         <div className="overview-record-main">
@@ -865,7 +892,7 @@ export default function Overview() {
                             key={invoice.id ?? index}
                           >
                             <div className="overview-record-icon order-icon">
-                              ₹
+                              <ReceiptText size={18} aria-hidden="true" />
                             </div>
 
                             <div className="overview-record-main">
@@ -943,7 +970,7 @@ export default function Overview() {
                           key={record.id ?? index}
                         >
                           <div className="overview-record-icon production-icon">
-                            ♧
+                            <Leaf size={18} aria-hidden="true" />
                           </div>
 
                           <div className="overview-record-main">
