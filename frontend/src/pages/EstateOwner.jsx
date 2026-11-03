@@ -63,6 +63,12 @@ function EstateOwner() {
       user?.is_superuser ||
       ["admin", "administrator", "superuser"].includes(role)
   );
+  const displayName =
+    user?.full_name ||
+    user?.name ||
+    [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
+    user?.username ||
+    "Estate Owner";
 
   const [owners, setOwners] = useState([]);
   const [estates, setEstates] = useState([]);
@@ -229,9 +235,11 @@ function EstateOwner() {
     <div className="estate-owner-page">
       <div className="estate-owner-header">
         <div>
-          <h2>Estate Owner Management</h2>
+          <h2>{isAdmin ? "Estate Owner Management" : displayName}</h2>
           <p>
-            View registered owners and their estate information.
+            {isAdmin
+              ? "View registered owners and their estate information."
+              : "Your estate owner account and estate information."}
           </p>
         </div>
 
