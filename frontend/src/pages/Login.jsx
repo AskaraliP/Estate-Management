@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import API from "../api/client";
+import EstateCarousel from "../components/EstateCarousel";
 import "../styles/Login.css";
 
 export default function Login() {
@@ -137,6 +138,8 @@ export default function Login() {
 
   return (
     <section className="login-single-page">
+      <EstateCarousel />
+
       <div className="login-split-container">
         {/* =================================
             LOGIN CARD

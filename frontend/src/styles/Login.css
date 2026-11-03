@@ -1550,10 +1550,7 @@
   gap: 0;
   padding: 32px 20px;
   overflow: auto;
-  background:
-    linear-gradient(135deg, rgb(13 45 29 / 54%), rgb(20 61 39 / 38%)),
-    url("../assets/rubber-estate-1-4k.webp") center 52% / cover no-repeat,
-    #153e2b;
+  background: #153e2b;
 }
 
 .login-split-container {
