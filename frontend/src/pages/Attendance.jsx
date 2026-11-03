@@ -33,12 +33,33 @@ const normalizeRole = (value) =>
     .toLowerCase()
     .replace(/[\s-]+/g, "_");
 
-const getLabourUserId = (labour) => {
-  if (labour?.user && typeof labour.user === "object") {
-    return labour.user.id ?? labour.user_id ?? labour.id;
+const normalizeId = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return "";
   }
 
-  return labour?.user ?? labour?.user_id ?? labour?.id;
+  if (typeof value === "object") {
+    return normalizeId(
+      value.id ?? value.pk ?? value.user_id ?? value.estate_id
+    );
+  }
+
+  return String(value);
+};
+
+const getLabourUserId = (labour) => {
+  if (labour?.user && typeof labour.user === "object") {
+    return normalizeId(
+      labour.user.id ??
+        labour.user.pk ??
+        labour.user_id ??
+        labour.id
+    );
+  }
+
+  return normalizeId(
+    labour?.user ?? labour?.user_id ?? labour?.id
+  );
 };
 
 const getLabourName = (labour) =>
@@ -61,10 +82,16 @@ const getAttendanceLabourName = (item) =>
 
 const getLabourEstateId = (labour) => {
   if (labour?.estate && typeof labour.estate === "object") {
-    return labour.estate.id;
+    return normalizeId(
+      labour.estate.id ??
+        labour.estate.pk ??
+        labour.estate_id
+    );
   }
 
-  return labour?.estate ?? labour?.estate_id ?? null;
+  return normalizeId(
+    labour?.estate ?? labour?.estate_id
+  );
 };
 
 const getErrorMessage = (err) => {
@@ -167,7 +194,7 @@ export default function Attendance() {
 
   const selectedLabours = labours.filter(
     (labour) =>
-      String(getLabourEstateId(labour)) === String(form.estate)
+      getLabourEstateId(labour) === normalizeId(form.estate)
   );
 
   async function handleSubmit(event) {
@@ -187,7 +214,7 @@ export default function Attendance() {
 
     const selectedLabour = selectedLabours.find(
       (labour) =>
-        String(getLabourUserId(labour)) === String(form.labour)
+        getLabourUserId(labour) === normalizeId(form.labour)
     );
 
     if (!selectedLabour) {
@@ -300,11 +327,19 @@ export default function Attendance() {
               >
                 <option value="">Select estate</option>
 
-                {estates.map((estate) => (
-                  <option key={estate.id} value={estate.id}>
-                    {estate.name || `Estate #${estate.id}`}
-                  </option>
-                ))}
+                {estates.map((estate) => {
+                  const estateId = normalizeId(
+                    estate.id ?? estate.pk
+                  );
+
+                  if (!estateId) return null;
+
+                  return (
+                    <option key={estateId} value={estateId}>
+                      {estate.name || `Estate #${estateId}`}
+                    </option>
+                  );
+                })}
               </select>
 
               {!loading && estates.length === 0 && (
@@ -332,11 +367,11 @@ export default function Attendance() {
                 {selectedLabours.map((labour, index) => {
                   const labourUserId = getLabourUserId(labour);
 
-                  if (labourUserId == null) return null;
+                  if (!labourUserId) return null;
 
                   return (
                     <option
-                      key={labour.id ?? labourUserId ?? index}
+                      key={labour.id ?? labour.pk ?? labourUserId ?? index}
                       value={labourUserId}
                     >
                       {getLabourName(labour)}
