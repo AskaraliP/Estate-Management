@@ -6,14 +6,10 @@ import {
   UserRound,
   LockKeyhole,
   ArrowRight,
-  Sprout,
-  ShoppingBasket,
-  Users,
   ShieldCheck,
 } from "lucide-react";
 
 import API from "../api/client";
-import EstateCarousel from "../components/EstateCarousel";
 import "../styles/Login.css";
 
 export default function Login() {
@@ -141,8 +137,6 @@ export default function Login() {
 
   return (
     <section className="login-single-page">
-      <EstateCarousel />
-
       <div className="login-split-container">
         {/* =================================
             LOGIN CARD
@@ -268,25 +262,6 @@ export default function Login() {
           </div>
         </section>
       </div>
-
-      <footer className="login-feature-strip" aria-label="Platform features">
-        <div className="login-feature">
-          <Sprout size={22} aria-hidden="true" />
-          <span>Efficient Estate<br />Management</span>
-        </div>
-        <div className="login-feature">
-          <Users size={22} aria-hidden="true" />
-          <span>Empowered<br />Workforce</span>
-        </div>
-        <div className="login-feature">
-          <ShoppingBasket size={22} aria-hidden="true" />
-          <span>Smart Inventory<br />&amp; Orders</span>
-        </div>
-        <div className="login-feature">
-          <ShieldCheck size={22} aria-hidden="true" />
-          <span>Secure &amp; Reliable<br />Platform</span>
-        </div>
-      </footer>
     </section>
   );
 }

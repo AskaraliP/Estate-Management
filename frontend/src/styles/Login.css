@@ -1543,3 +1543,112 @@
     padding-top: 8px;
   }
 }
+
+/* Simple, focused sign-in layout. */
+.login-single-page {
+  justify-content: center;
+  gap: 0;
+  padding: 32px 20px;
+  overflow: auto;
+  background:
+    radial-gradient(ellipse at 50% 0%, #e8f2e9 0%, transparent 52%),
+    #f5f7f5;
+}
+
+.login-split-container {
+  flex: 0 0 auto;
+  width: min(100%, 420px);
+  max-width: 420px;
+}
+
+.login-single-page .login-form-column {
+  gap: 22px;
+  padding: clamp(26px, 5vw, 38px);
+  border: 1px solid #e4eae5;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgb(26 55 35 / 8%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.login-single-page .login-heading-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 18px;
+  border: 1px solid #e1eee4;
+  border-radius: 13px;
+  background: #f0f7f1;
+  color: #267447;
+}
+
+.login-single-page .login-form-eyebrow {
+  color: #397650;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+}
+
+.login-single-page .login-heading h1 {
+  color: #1d2b22;
+  font-size: clamp(24px, 5vw, 28px);
+  letter-spacing: -0.7px;
+}
+
+.login-single-page .login-heading-description {
+  color: #6b776e;
+}
+
+.login-single-page .login-form {
+  gap: 17px;
+}
+
+.login-single-page .login-field label {
+  color: #34443a;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.login-single-page .login-input-wrap {
+  min-height: 48px;
+  border-color: #dfe6e0;
+  border-radius: 10px;
+  background: #fff;
+  color: #77847a;
+}
+
+.login-single-page .login-input-wrap:focus-within {
+  border-color: #43845a;
+  box-shadow: 0 0 0 3px rgb(45 121 71 / 10%);
+}
+
+.login-single-page .login-input-wrap input {
+  height: 46px;
+}
+
+.login-single-page .login-submit-button {
+  min-height: 48px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.login-single-page .login-security-note {
+  color: #758078;
+}
+
+.login-single-page .login-signup-prompt {
+  padding-top: 17px;
+}
+
+@media (max-width: 700px) {
+  .login-single-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 20px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-single-page .login-submit-button {
+    transition: none;
+  }
+}
