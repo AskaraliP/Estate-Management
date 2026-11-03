@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../api/client";
 import "../styles/Topbar.css";
 
-function Topbar({ onMenuClick, title = "Dashboard" }) {
+function Topbar({ onMenuClick }) {
   const navigate = useNavigate();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -144,10 +144,6 @@ function Topbar({ onMenuClick, title = "Dashboard" }) {
           <Menu size={23} />
         </button>
 
-        <div className="topbar-heading">
-          <h1>{title}</h1>
-          <p>Manage your rubber estate operations</p>
-        </div>
       </div>
 
       <div className="topbar-right">

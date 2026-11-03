@@ -436,12 +436,6 @@ export default function Overview() {
             RUBBER ESTATE MANAGEMENT
           </p>
 
-          <h1>
-            {isBuyer
-              ? "Buyer Dashboard"
-              : "Dashboard Overview"}
-          </h1>
-
           <p className="overview-subtitle">
             {isBuyer
               ? "Manage your rubber purchases, orders and payments."
