@@ -46,11 +46,13 @@ const getErrorMessage = (err) => {
 export default function Order() {
   const [role, setRole] = useState("");
   const [orders, setOrders] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [processingId, setProcessingId] = useState(null);
   const [error, setError] = useState("");
+  const [invoiceError, setInvoiceError] = useState("");
   const [notice, setNotice] = useState("");
   const [formOpen, setFormOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -67,6 +69,8 @@ export default function Order() {
   const loadData = useCallback(async () => {
     setLoading(true);
     setError("");
+    setInvoiceError("");
+    setInvoices([]);
 
     try {
       const roleResponse = await API.get("user-role/");
@@ -83,6 +87,20 @@ export default function Order() {
 
       setOrders(getRows(ordersResponse.data));
       setInventory(getRows(inventoryResponse.data));
+
+      if (["admin", "estate_owner", "buyer"].includes(currentRole)) {
+        try {
+          const invoicesResponse = await API.get("invoices/");
+          setInvoices(getRows(invoicesResponse.data));
+        } catch (invoiceLoadError) {
+          setInvoices([]);
+          setInvoiceError(
+            `Payment details could not be loaded: ${getErrorMessage(invoiceLoadError)}`
+          );
+        }
+      } else {
+        setInvoices([]);
+      }
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -128,6 +146,21 @@ export default function Order() {
       );
     });
   }, [orders, search, statusFilter]);
+
+  const invoicesByOrder = useMemo(
+    () =>
+      new Map(
+        invoices.map((invoice) => [
+          String(
+            typeof invoice.order === "object"
+              ? invoice.order?.id
+              : invoice.order
+          ),
+          invoice,
+        ])
+      ),
+    [invoices]
+  );
 
   const openForm = (inventoryId = "") => {
     setError("");
@@ -282,6 +315,19 @@ export default function Order() {
         <div className="orders-alert orders-alert-error" role="alert">
           <span>{error}</span>
           <button type="button" onClick={() => setError("")} aria-label="Dismiss error">
+            ×
+          </button>
+        </div>
+      )}
+
+      {invoiceError && (
+        <div className="orders-alert orders-alert-error" role="alert">
+          <span>{invoiceError}</span>
+          <button
+            type="button"
+            onClick={() => setInvoiceError("")}
+            aria-label="Dismiss payment details error"
+          >
             ×
           </button>
         </div>
@@ -469,6 +515,7 @@ export default function Order() {
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Total</th>
+                <th>Payment</th>
                 <th>Status</th>
                 {canManage && <th>Actions</th>}
               </tr>
@@ -477,6 +524,24 @@ export default function Order() {
               {filteredOrders.map((order) => {
                 const status = String(order.status ?? "PENDING").toUpperCase();
                 const pending = status === "PENDING";
+                const invoice = invoicesByOrder.get(String(order.id));
+                const paidAmount = Number(invoice?.paid_amount ?? 0);
+                const invoiceAmount = Number(
+                  invoice?.amount ?? order.total_price ?? 0
+                );
+                const balanceDue = Math.max(0, invoiceAmount - paidAmount);
+                const recordedPaymentStatus = String(
+                  invoice?.payment_status ?? ""
+                ).toUpperCase();
+                const paymentStatus = invoice
+                  ? recordedPaymentStatus === "REFUNDED"
+                    ? "REFUNDED"
+                    : invoiceAmount > 0 && paidAmount >= invoiceAmount
+                      ? "PAID"
+                      : paidAmount > 0
+                        ? "PARTIAL"
+                        : recordedPaymentStatus || "UNPAID"
+                  : "NOT INVOICED";
 
                 return (
                   <tr key={order.id}>
@@ -503,6 +568,23 @@ export default function Order() {
                       {order.quantity} {order.unit ?? ""}
                     </td>
                     <td>{money(order.total_price)}</td>
+                    <td>
+                      {invoice ? (
+                        <div className="orders-payment">
+                          <span
+                            className={`orders-payment-status orders-payment-${paymentStatus.toLowerCase()}`}
+                          >
+                            {paymentStatus}
+                          </span>
+                          <span className="orders-payment-amounts">
+                            Paid {money(paidAmount)}
+                            {balanceDue > 0 && ` · Due ${money(balanceDue)}`}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="orders-muted">Not invoiced</span>
+                      )}
+                    </td>
                     <td>
                       <span
                         className={`orders-status orders-status-${status.toLowerCase()}`}
