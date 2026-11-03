@@ -37,15 +37,15 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 20px 24px;
+  gap: 22px 24px;
   margin-bottom: 26px;
-  padding: 22px 24px;
+  padding: 28px;
   border: 1px solid #dfeae2;
-  border-radius: 16px;
+  border-radius: 18px;
   background:
-    radial-gradient(ellipse at 92% 0%, rgb(222 242 228 / 72%), transparent 42%),
+    radial-gradient(ellipse at 90% 0%, rgb(222 242 228 / 56%), transparent 38%),
     #fff;
-  box-shadow: 0 5px 18px rgb(22 50 31 / 4%);
+  box-shadow: 0 8px 24px rgb(22 50 31 / 5%);
 }
 
 .labour-profile-identity {
@@ -57,9 +57,9 @@
 
 .labour-profile-avatar {
   display: grid;
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
   place-items: center;
   border: 3px solid #fff;
   border-radius: 17px;
@@ -75,44 +75,91 @@
 }
 
 .labour-profile-heading .labour-eyebrow {
-  margin-bottom: 4px;
-  font-size: 9px;
+  margin-bottom: 6px;
+  font-size: 10px;
 }
 
 .labour-profile-heading h1 {
   margin: 0;
   overflow: hidden;
   color: #17291d;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 750;
   letter-spacing: -0.5px;
   text-overflow: ellipsis;
 }
 
 .labour-profile-heading .labour-subtitle {
-  margin-top: 5px;
-  font-size: 11px;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.labour-profile-refresh {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 13px;
+  border: 1px solid #dce8df;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 84%);
+  color: #176b45;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.labour-profile-refresh:hover:not(:disabled) {
+  border-color: #b7d2c0;
+  background: #f4faf5;
+}
+
+.labour-profile-refresh:focus-visible {
+  outline: 3px solid rgb(35 129 83 / 20%);
+  outline-offset: 2px;
+}
+
+.labour-profile-refresh:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.labour-refresh-spinning {
+  animation: labour-refresh-spin 1s linear infinite;
+}
+
+@keyframes labour-refresh-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .labour-profile-details {
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-  padding-top: 17px;
+  gap: 12px;
+  padding-top: 20px;
   border-top: 1px solid #e8eee9;
 }
 
 .labour-profile-detail {
   display: flex;
   min-width: 0;
+  min-height: 68px;
   align-items: flex-start;
-  gap: 9px;
+  gap: 10px;
+  padding: 13px 12px;
+  border: 1px solid #e8eee9;
+  border-radius: 12px;
+  background: #fbfdfb;
 }
 
 .labour-profile-detail > svg {
   flex: 0 0 16px;
-  margin-top: 2px;
+  margin-top: 1px;
   color: #43805a;
 }
 
@@ -124,17 +171,53 @@
 }
 
 .labour-profile-detail small {
-  color: #829087;
-  font-size: 9px;
+  color: #758078;
+  font-size: 10px;
 }
 
 .labour-profile-detail strong {
   overflow: hidden;
-  color: #304137;
-  font-size: 10px;
-  font-weight: 650;
+  color: #26382c;
+  font-size: 12px;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.labour-profile-error,
+.labour-profile-message {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.labour-profile-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #f0caca;
+  background: #fff7f7;
+  color: #8f2f2f;
+}
+
+.labour-profile-error button {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid #e9c2c2;
+  border-radius: 7px;
+  background: #fff;
+  color: #8f2f2f;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.labour-profile-message {
+  border: 1px solid #e4ebe5;
+  background: #f8fbf8;
+  color: #66746a;
 }
 
 .labour-refresh-btn {
@@ -552,8 +635,8 @@
   }
 
   .labour-profile-banner {
-    gap: 16px;
-    padding: 19px;
+    gap: 18px;
+    padding: 22px;
   }
 
   .labour-profile-details {
@@ -598,15 +681,24 @@
   .labour-profile-banner {
     grid-template-columns: minmax(0, 1fr);
     gap: 15px;
-    padding: 16px;
-  }
-
-  .labour-profile-banner > .labour-refresh-btn {
-    width: 100%;
+    padding: 18px;
   }
 
   .labour-profile-details {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    padding-top: 15px;
+  }
+
+  .labour-profile-detail {
+    min-height: 64px;
+    gap: 7px;
+    padding: 11px 9px;
+  }
+
+  .labour-profile-detail > svg {
+    flex-basis: 14px;
+    width: 14px;
   }
 
   .labour-refresh-btn {

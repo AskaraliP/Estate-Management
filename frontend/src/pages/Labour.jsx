@@ -10,6 +10,7 @@ import {
   Check,
   Mail,
   Phone,
+  RefreshCw,
   UserRound,
   Wallet,
   X,
@@ -472,6 +473,22 @@ export default function Labour() {
             </div>
           </div>
 
+          <button
+            type="button"
+            className="labour-profile-refresh"
+            onClick={loadData}
+            disabled={loading}
+            aria-label={loading ? "Refreshing profile" : "Refresh profile"}
+            title="Refresh profile"
+          >
+            <RefreshCw
+              size={16}
+              className={loading ? "labour-refresh-spinning" : ""}
+              aria-hidden="true"
+            />
+            <span>{loading ? "Refreshing" : "Refresh"}</span>
+          </button>
+
           <div className="labour-profile-details">
             <div className="labour-profile-detail">
               <UserRound size={16} aria-hidden="true" />
@@ -532,14 +549,26 @@ export default function Labour() {
             </div>
           </div>
 
-          <button
-            type="button"
-            className="labour-refresh-btn"
-            onClick={loadData}
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "↻ Refresh"}
-          </button>
+          {error && (
+            <div className="labour-profile-error" role="alert">
+              <span>{error}</span>
+              <button type="button" onClick={loadData} disabled={loading}>
+                Try again
+              </button>
+            </div>
+          )}
+
+          {loading && !ownLabourProfile && (
+            <p className="labour-profile-message" role="status">
+              Loading your profile...
+            </p>
+          )}
+
+          {!loading && !error && !ownLabourProfile && (
+            <p className="labour-profile-message">
+              No labour profile is linked to your account yet.
+            </p>
+          )}
         </section>
       )}
 
@@ -775,52 +804,54 @@ export default function Labour() {
         </section>
       )}
 
-      <div className="labour-summary">
-        <article className="labour-stat-card">
-          <div className="labour-stat-icon green">♙</div>
-          <div>
-            <span>Total Labourers</span>
-            <strong>{labours.length}</strong>
-          </div>
-        </article>
+      {canManageLabour && (
+        <>
+          <div className="labour-summary">
+            <article className="labour-stat-card">
+              <div className="labour-stat-icon green">♙</div>
+              <div>
+                <span>Total Labourers</span>
+                <strong>{labours.length}</strong>
+              </div>
+            </article>
 
-        <article className="labour-stat-card">
-          <div className="labour-stat-icon blue">✓</div>
-          <div>
-            <span>Assigned to Estate</span>
-            <strong>{assignedCount}</strong>
-          </div>
-        </article>
+            <article className="labour-stat-card">
+              <div className="labour-stat-icon blue">✓</div>
+              <div>
+                <span>Assigned to Estate</span>
+                <strong>{assignedCount}</strong>
+              </div>
+            </article>
 
-        <article className="labour-stat-card">
-          <div className="labour-stat-icon orange">◷</div>
-          <div>
-            <span>Not Assigned</span>
-            <strong>{unassignedCount}</strong>
-          </div>
-        </article>
-      </div>
-
-      <div className="labour-content">
-        <div className="labour-toolbar">
-          <div>
-            <h2>Labour Profiles</h2>
-            <p>
-              Worker information and current estate assignment.
-            </p>
+            <article className="labour-stat-card">
+              <div className="labour-stat-icon orange">◷</div>
+              <div>
+                <span>Not Assigned</span>
+                <strong>{unassignedCount}</strong>
+              </div>
+            </article>
           </div>
 
-          <input
-            type="search"
-            className="labour-search"
-            placeholder="Search name, phone or estate..."
-            value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
-            aria-label="Search labour profiles"
-          />
-        </div>
+          <div className="labour-content">
+            <div className="labour-toolbar">
+              <div>
+                <h2>Labour Profiles</h2>
+                <p>
+                  Worker information and current estate assignment.
+                </p>
+              </div>
+
+              <input
+                type="search"
+                className="labour-search"
+                placeholder="Search name, phone or estate..."
+                value={search}
+                onChange={(event) =>
+                  setSearch(event.target.value)
+                }
+                aria-label="Search labour profiles"
+              />
+            </div>
 
         <div className="labour-filter-row">
           <label htmlFor="labour-estate-filter">
@@ -995,7 +1026,9 @@ export default function Labour() {
           Showing {filteredLabours.length} of{" "}
           {labours.length} labourers
         </footer>
-      </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }
