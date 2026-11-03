@@ -1542,3 +1542,43 @@
     padding-top: 8px;
   }
 }
+
+.login-single-page {
+  justify-content: center;
+  padding: 96px 24px 112px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.login-single-page .login-split-container {
+  margin: auto;
+}
+
+.login-single-page .login-feature-strip {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  left: 24px;
+  width: min(calc(100% - 48px), 1020px);
+  margin: 0 auto;
+}
+
+@media (max-width: 700px) {
+  .login-single-page {
+    padding: 88px 16px 104px;
+  }
+
+  .login-single-page .login-feature-strip {
+    right: 16px;
+    bottom: 14px;
+    left: 16px;
+    width: calc(100% - 32px);
+  }
+}
+
+@media (max-width: 700px) and (max-height: 700px) {
+  .login-single-page {
+    padding-top: 78px;
+    padding-bottom: 90px;
+  }
+}

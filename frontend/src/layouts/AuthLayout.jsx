@@ -20,14 +20,6 @@ export default function AuthLayout() {
             </span>
           </Link>
 
-          <p className="auth-brand-tagline">
-            <Leaf size={15} aria-hidden="true" />
-            <span>Better Estates</span>
-            <span aria-hidden="true">·</span>
-            <span>Stronger Communities</span>
-            <span aria-hidden="true">·</span>
-            <span>Sustainable Future</span>
-          </p>
         </header>
       )}
 
