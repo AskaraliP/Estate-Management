@@ -7,7 +7,7 @@ const API = axios.create({
     import.meta.env.VITE_API_BASE_URL ||
     (import.meta.env.DEV
       ? "http://127.0.0.1:8000/api/"
-      : "https://estate-management-phd4.vercel.app/api/"),
+      : "https://estate-management-api-bid8.onrender.com/api/"),
   headers: {
     "Content-Type": "application/json",
   },
