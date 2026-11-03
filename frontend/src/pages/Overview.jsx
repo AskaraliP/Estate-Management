@@ -99,6 +99,7 @@ const getErrorStatus = (error) =>
 
 export default function Overview() {
   const [userRole, setUserRole] = useState("");
+  const [userName, setUserName] = useState("");
 
   const [data, setData] = useState({
     estates: [],
@@ -208,10 +209,17 @@ export default function Overview() {
         const role = String(
           response.data?.role ?? ""
         ).toLowerCase();
+        const name =
+          response.data?.full_name ||
+          response.data?.name ||
+          response.data?.company_name ||
+          response.data?.username ||
+          "";
 
         if (cancelled) return;
 
         setUserRole(role);
+        setUserName(name);
         await loadOverview(role);
       } catch (err) {
         if (cancelled) return;
@@ -433,7 +441,7 @@ export default function Overview() {
         <div>
           <p className="overview-eyebrow">
             <Leaf size={14} aria-hidden="true" />
-            RUBBER ESTATE MANAGEMENT
+            {userName || "RUBBER ESTATE MANAGEMENT"}
           </p>
 
           <p className="overview-subtitle">
