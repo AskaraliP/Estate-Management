@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Menu,
   Bell,
-  UserCircle,
   ChevronDown,
   CheckCheck,
 } from "lucide-react";
@@ -243,10 +242,6 @@ function Topbar({ onMenuClick, title = "Dashboard" }) {
         <div className="topbar-divider" />
 
         <div className="topbar-profile">
-          <div className="topbar-avatar">
-            <UserCircle size={25} />
-          </div>
-
           <div className="topbar-user-info">
             <span className="topbar-user-name">{displayName}</span>
             <span className="topbar-user-role">{formatRole(role)}</span>
