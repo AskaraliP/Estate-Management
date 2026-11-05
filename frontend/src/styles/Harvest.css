@@ -278,6 +278,19 @@
   cursor: not-allowed;
 }
 
+.harvest-actual-quantity input {
+  width: 110px;
+  padding: 8px;
+  border: 1px solid #dce3dc;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.harvest-actual-quantity input:focus {
+  outline: 2px solid #b4d8c1;
+  border-color: #176b45;
+}
+
 /* =========================================
    VERIFICATION STATUS BADGES
 ========================================= */

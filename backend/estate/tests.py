@@ -10,6 +10,9 @@ from .models import (
     LabourProfile,
     LabourWagePayment,
     Notification,
+    Inventory,
+    Production,
+    TappingRecord,
 )
 
 
@@ -150,6 +153,72 @@ class LabourWagePaymentApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["payment_date"], "2026-10-17")
         self.assertEqual(LabourWagePayment.objects.count(), 1)
+
+
+class TappingRecordVerificationApiTests(APITestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.owner = user_model.objects.create_user(
+            username="harvest-owner",
+            password="test-password",
+        )
+        EstateOwnerProfile.objects.create(user=self.owner)
+        self.labour = user_model.objects.create_user(
+            username="harvest-labour",
+            password="test-password",
+        )
+        self.estate = Estate.objects.create(
+            name="Harvest Estate",
+            owner=self.owner,
+            location="Test location",
+            total_area="5.00",
+        )
+        self.record = TappingRecord.objects.create(
+            labour=self.labour,
+            estate=self.estate,
+            category="LATEX",
+            quantity="5.00",
+            unit="LITRE",
+        )
+        self.client.force_authenticate(user=self.owner)
+
+    def test_verification_credits_actual_quantity_above_submitted(self):
+        response = self.client.post(
+            f"/api/tapping-records/{self.record.pk}/verify/",
+            {"verified_quantity": "6.25"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["verified_quantity"], "6.25")
+        production = Production.objects.get(tapping_record=self.record)
+        inventory = Inventory.objects.get(
+            estate=self.estate,
+            category="LATEX",
+        )
+        self.assertEqual(str(production.verified_quantity), "6.25")
+        self.assertEqual(str(inventory.stock_quantity), "6.25")
+        self.record.refresh_from_db()
+        self.assertTrue(self.record.is_verified)
+
+        records_response = self.client.get("/api/tapping-records/")
+        self.assertEqual(records_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            str(records_response.data[0]["verified_quantity"]),
+            "6.25",
+        )
+
+    def test_verification_rejects_non_positive_actual_quantity(self):
+        response = self.client.post(
+            f"/api/tapping-records/{self.record.pk}/verify/",
+            {"verified_quantity": "0"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(self.record.is_verified)
+        self.assertFalse(Production.objects.exists())
+        self.assertFalse(Inventory.objects.exists())
 
 # Create your tests here.
 

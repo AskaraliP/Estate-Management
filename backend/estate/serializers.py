@@ -205,6 +205,13 @@ class AttendanceSerializer(serializers.ModelSerializer):
 class TappingRecordSerializer(serializers.ModelSerializer):
     labour_name = serializers.ReadOnlyField(source="labour.username")
     estate_name = serializers.ReadOnlyField(source="estate.name")
+    verified_quantity = serializers.SerializerMethodField()
+
+    def get_verified_quantity(self, record):
+        try:
+            return record.production.verified_quantity
+        except Production.DoesNotExist:
+            return None
 
     class Meta:
         model = TappingRecord
@@ -217,6 +224,7 @@ class TappingRecordSerializer(serializers.ModelSerializer):
             "date",
             "category",
             "quantity",
+            "verified_quantity",
             "unit",
             "assigned_block",
             "is_verified",
@@ -1600,7 +1608,6 @@ class LabourWagePaymentSerializer(serializers.ModelSerializer):
 #             "status",
 #             "payment_date",
 #         ]
-
 
 
 

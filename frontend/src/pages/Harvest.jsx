@@ -110,6 +110,7 @@ function Harvest() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [verifyingId, setVerifyingId] = useState(null);
+  const [verifiedQuantities, setVerifiedQuantities] = useState({});
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -300,8 +301,17 @@ function Harvest() {
       return;
     }
 
+    const verifiedQuantity = Number(
+      verifiedQuantities[record.id] ?? record.quantity
+    );
+
+    if (!Number.isFinite(verifiedQuantity) || verifiedQuantity <= 0) {
+      setError("Enter an actual harvest quantity greater than zero.");
+      return;
+    }
+
     const confirmed = window.confirm(
-      "Verify this harvest? The backend will add its quantity to inventory."
+      `Verify this harvest with an actual quantity of ${verifiedQuantity} ${record.unit || ""}? This amount will be added to inventory.`
     );
 
     if (!confirmed) return;
@@ -311,7 +321,9 @@ function Harvest() {
     setVerifyingId(record.id);
 
     try {
-      await API.post(`tapping-records/${record.id}/verify/`);
+      await API.post(`tapping-records/${record.id}/verify/`, {
+        verified_quantity: verifiedQuantity,
+      });
 
       setSuccess(
         "Harvest verified successfully. Inventory and production records have been updated."
@@ -632,7 +644,8 @@ function Harvest() {
                   <th>Date</th>
                   <th>Estate</th>
                   <th>Type</th>
-                  <th>Quantity</th>
+                  <th>Submitted Quantity</th>
+                  <th>Actual Quantity</th>
                   <th>Verification</th>
                   {canVerify && <th>Action</th>}
                 </tr>
@@ -662,6 +675,42 @@ function Harvest() {
                       <td>
                         {record.quantity ?? record.weight ?? "—"}{" "}
                         {record.unit || ""}
+                      </td>
+
+                      <td>
+                        {status === "PENDING" && canVerify ? (
+                          <label className="harvest-actual-quantity">
+                            <input
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                              value={
+                                verifiedQuantities[record.id] ??
+                                record.quantity ??
+                                ""
+                              }
+                              onChange={(event) =>
+                                setVerifiedQuantities((previous) => ({
+                                  ...previous,
+                                  [record.id]: event.target.value,
+                                }))
+                              }
+                              disabled={
+                                verifyingId !== null ||
+                                loading
+                              }
+                              aria-label={`Actual harvest quantity for record ${record.id}`}
+                            />
+                            {" "}{record.unit || ""}
+                          </label>
+                        ) : record.verified_quantity != null ? (
+                          <>
+                            {record.verified_quantity}{" "}
+                            {record.unit || ""}
+                          </>
+                        ) : (
+                          "—"
+                        )}
                       </td>
 
                       <td>

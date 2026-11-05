@@ -690,7 +690,7 @@ class TappingRecordViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         base = TappingRecord.objects.select_related(
-            "labour", "estate"
+            "labour", "estate", "production"
         )
 
         if is_admin(user):
@@ -825,11 +825,14 @@ class TappingRecordViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        quantity = record.quantity
-
         try:
             verified_quantity = Decimal(
-                str(request.data.get("verified_quantity", quantity))
+                str(
+                    request.data.get(
+                        "verified_quantity",
+                        record.quantity,
+                    )
+                )
             )
             calculated_wage = Decimal(
                 str(request.data.get("calculated_wage", "0"))
@@ -839,11 +842,16 @@ class TappingRecordViewSet(viewsets.ModelViewSet):
                 "Enter valid numeric values for quantity and wage."
             )
 
-        if verified_quantity <= 0 or verified_quantity > quantity:
+        if (
+            not verified_quantity.is_finite()
+            or verified_quantity <= 0
+            or verified_quantity > Decimal("99999999.99")
+            or verified_quantity.as_tuple().exponent < -2
+        ):
             raise ValidationError({
                 "verified_quantity": (
-                    "Verified quantity must be positive and cannot exceed "
-                    "the submitted quantity."
+                    "Actual quantity must be positive and have no more than "
+                    "two decimal places."
                 )
             })
 
